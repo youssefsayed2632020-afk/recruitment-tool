@@ -16,186 +16,411 @@ st.set_page_config(page_title="Dawood Recruitment", page_icon="◈", layout="cen
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@200;300;400;500;600&display=swap');
 
 :root {
-  --navy:  #0B1629;
-  --gold:  #C9A84C;
-  --gold2: #E8C97A;
-  --white: #FFFFFF;
-  --gray:  #8A929E;
-  --light: #C0C8D4;
-  --line:  rgba(201,168,76,0.2);
-  --card:  rgba(255,255,255,0.03);
+  --ink:     #05080F;
+  --navy:    #080E1C;
+  --navy2:   #0C1525;
+  --navy3:   #111D30;
+  --gold:    #C8A45A;
+  --gold2:   #E2C07E;
+  --goldD:   #A0813A;
+  --goldL:   rgba(200,164,90,0.10);
+  --goldM:   rgba(200,164,90,0.20);
+  --goldB:   rgba(200,164,90,0.35);
+  --white:   #EDE9E0;
+  --muted:   #6B7485;
+  --soft:    #9BA5B5;
+  --glass:   rgba(255,255,255,0.03);
+  --glassH:  rgba(255,255,255,0.06);
+  --border:  rgba(200,164,90,0.15);
+  --borderW: rgba(255,255,255,0.06);
 }
 
-.stApp { background: var(--navy); font-family: 'DM Sans', sans-serif; }
-#MainMenu, footer, header { visibility: hidden; }
-.stDeployButton { display: none; }
-.main .block-container { max-width: 600px; padding: 0 1.5rem 5rem; margin: 0 auto; }
+/* ── BASE ── */
+* { box-sizing: border-box; }
 
+.stApp {
+  background: var(--ink) !important;
+  font-family: 'Outfit', sans-serif !important;
+  background-image:
+    radial-gradient(ellipse 90% 60% at 15% -5%,  rgba(200,164,90,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 105%, rgba(200,164,90,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50%  50%, rgba(12,21,37,0.8)    0%, transparent 100%) !important;
+}
+
+#MainMenu, footer, header { visibility: hidden !important; }
+.stDeployButton { display: none !important; }
+.main .block-container {
+  max-width: 640px !important;
+  padding: 0 1.5rem 7rem !important;
+  margin: 0 auto !important;
+}
+
+/* ══════════════════════════════════════
+   BRAND BAR
+══════════════════════════════════════ */
 .brand-bar {
-  border-bottom: 1px solid var(--line);
-  padding: 26px 0 22px;
-  margin-bottom: 52px;
+  padding: 32px 0 28px;
+  margin-bottom: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+}
+.brand-bar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
+  opacity: 0.3;
 }
 .brand-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 19px; font-weight: 500;
-  color: var(--white); letter-spacing: 4px; text-transform: uppercase;
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 600;
+  color: var(--white); letter-spacing: 6px;
+  text-transform: uppercase;
+}
+.brand-dot {
+  width: 4px; height: 4px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 2px 1px;
+  vertical-align: middle;
 }
 .brand-tag {
-  font-size: 9px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold);
+  font-family: 'Outfit', sans-serif;
+  font-size: 8px; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold); font-weight: 300;
 }
 
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
 .hero-eyebrow {
-  font-size: 9px; letter-spacing: 4px;
+  font-size: 8px; letter-spacing: 5px;
   text-transform: uppercase; color: var(--gold);
-  margin-bottom: 18px;
-  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px; font-weight: 400;
+  display: flex; align-items: center; gap: 14px;
+  opacity: 0.85;
 }
-.hero-eyebrow::after { content:''; flex:1; height:1px; background:var(--line); }
+.hero-eyebrow::before {
+  content: '◈';
+  font-size: 10px;
+}
+.hero-eyebrow::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--goldB), transparent);
+}
 
 .hero-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 58px; font-weight: 300;
-  color: var(--white); line-height: 1.05;
-  margin-bottom: 6px; letter-spacing: -1px;
+  font-family: 'Playfair Display', serif;
+  font-size: 64px; font-weight: 400;
+  color: var(--white); line-height: 1.0;
+  margin-bottom: 8px; letter-spacing: -1.5px;
 }
-.hero-title em { color: var(--gold); font-style: italic; }
+.hero-title em {
+  color: var(--gold);
+  font-style: italic;
+  font-weight: 400;
+}
+.hero-title span {
+  display: block;
+  font-size: 52px;
+}
 
 .hero-sub {
-  font-size: 13.5px; color: var(--gray);
-  font-weight: 300; line-height: 1.75;
-  margin: 20px 0 44px; max-width: 400px;
+  font-size: 14px; color: var(--muted);
+  font-weight: 300; line-height: 1.85;
+  margin: 28px 0 52px; max-width: 380px;
+  letter-spacing: 0.2px;
+}
+.hero-sub strong {
+  color: var(--soft);
+  font-weight: 400;
 }
 
+/* ══════════════════════════════════════
+   STATS GRID
+══════════════════════════════════════ */
 .stats-grid {
-  display: grid; grid-template-columns: repeat(3,1fr);
-  gap: 1px; background: var(--line);
-  border: 1px solid var(--line); margin-bottom: 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 52px;
 }
-.stat-cell { background: var(--navy); padding: 22px 16px; text-align: center; }
+.stat-cell {
+  background: var(--navy2);
+  padding: 28px 16px;
+  text-align: center;
+  position: relative;
+  transition: background 0.3s;
+}
+.stat-cell::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 30px; height: 1px;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.stat-cell:hover { background: var(--navy3); }
+.stat-cell:hover::before { opacity: 1; }
+
 .stat-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 30px; font-weight: 400;
-  color: var(--gold); line-height: 1; margin-bottom: 7px;
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 600;
+  color: var(--gold); line-height: 1;
+  margin-bottom: 8px; letter-spacing: 1px;
 }
-.stat-lbl { font-size: 8.5px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray); }
+.stat-lbl {
+  font-size: 7.5px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--muted);
+  font-weight: 400;
+}
 
+/* ══════════════════════════════════════
+   SECTION LABEL
+══════════════════════════════════════ */
 .sec-label {
-  font-size: 8.5px; letter-spacing: 3.5px;
+  font-size: 8px; letter-spacing: 4px;
   text-transform: uppercase; color: var(--gold);
-  margin-bottom: 28px; padding-bottom: 12px;
-  border-bottom: 1px solid var(--line);
+  margin-bottom: 32px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 400;
 }
+.sec-label::before { content: '—'; opacity: 0.5; }
 
+/* ══════════════════════════════════════
+   SUCCESS BANNER
+══════════════════════════════════════ */
 .success-banner {
-  border: 1px solid rgba(201,168,76,0.35);
-  border-left: 3px solid var(--gold);
-  background: rgba(201,168,76,0.05);
-  padding: 15px 20px; border-radius: 2px;
-  color: var(--gold2); font-size: 13px;
-  letter-spacing: 0.3px; margin-bottom: 28px;
+  background: linear-gradient(135deg, rgba(200,164,90,0.08), rgba(200,164,90,0.03));
+  border: 1px solid var(--goldB);
+  border-left: 2px solid var(--gold);
+  padding: 16px 20px;
+  border-radius: 3px;
+  color: var(--gold2);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+.success-banner::before { content: '✦'; font-size: 12px; opacity: 0.7; }
 
+/* ══════════════════════════════════════
+   CV BOX
+══════════════════════════════════════ */
 .cv-box {
-  background: var(--card);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 2px; padding: 28px 22px;
-  font-size: 12.5px; line-height: 1.85;
-  color: var(--light); white-space: pre-wrap;
-  font-family: 'DM Sans', sans-serif; margin-bottom: 24px;
+  background: var(--navy2);
+  border: 1px solid var(--borderW);
+  border-top: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 32px 28px;
+  font-size: 12.5px;
+  line-height: 1.9;
+  color: var(--soft);
+  white-space: pre-wrap;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  margin-bottom: 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
-/* inputs */
+/* ══════════════════════════════════════
+   INPUTS
+══════════════════════════════════════ */
 .stTextInput label, .stTextArea label,
 .stSelectbox label, .stRadio > label {
-  font-size: 9.5px !important; letter-spacing: 2.5px !important;
-  text-transform: uppercase !important; color: var(--gray) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  color: var(--muted) !important;
   font-weight: 400 !important;
+  font-family: 'Outfit', sans-serif !important;
+  margin-bottom: 8px !important;
 }
+
 .stTextInput > div > div > input {
-  background: rgba(255,255,255,0.04) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  border-radius: 2px !important; color: var(--white) !important;
-  font-family: 'DM Sans',sans-serif !important; font-size: 14px !important;
-  padding: 14px 16px !important;
+  background: var(--navy2) !important;
+  border: 1px solid var(--borderW) !important;
+  border-radius: 3px !important;
+  color: var(--white) !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 300 !important;
+  padding: 15px 18px !important;
+  transition: all 0.25s !important;
+  letter-spacing: 0.3px !important;
 }
 .stTextInput > div > div > input:focus {
   border-color: var(--gold) !important;
-  background: rgba(201,168,76,0.04) !important; box-shadow: none !important;
+  background: var(--navy3) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.08) !important;
 }
+.stTextInput > div > div > input::placeholder { color: var(--muted) !important; opacity: 0.5 !important; }
+
 .stTextArea > div > div > textarea {
-  background: rgba(255,255,255,0.04) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  border-radius: 2px !important; color: var(--white) !important;
-  font-family: 'DM Sans',sans-serif !important; font-size: 14px !important;
+  background: var(--navy2) !important;
+  border: 1px solid var(--borderW) !important;
+  border-radius: 3px !important;
+  color: var(--white) !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 300 !important;
+  padding: 15px 18px !important;
+  transition: all 0.25s !important;
+  line-height: 1.7 !important;
 }
 .stTextArea > div > div > textarea:focus {
   border-color: var(--gold) !important;
-  background: rgba(201,168,76,0.04) !important; box-shadow: none !important;
+  background: var(--navy3) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.08) !important;
 }
-.stSelectbox > div > div {
-  background: rgba(255,255,255,0.04) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  border-radius: 2px !important; color: var(--white) !important;
-}
-.stSelectbox > div > div > div { color: var(--white) !important; }
-.stSelectbox svg { fill: var(--gray) !important; }
 
-/* radio */
-.stRadio > div { gap: 6px !important; }
+.stSelectbox > div > div {
+  background: var(--navy2) !important;
+  border: 1px solid var(--borderW) !important;
+  border-radius: 3px !important;
+  color: var(--white) !important;
+  padding: 4px 0 !important;
+  transition: all 0.25s !important;
+}
+.stSelectbox > div > div:focus-within {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.08) !important;
+}
+.stSelectbox > div > div > div { color: var(--white) !important; font-family: 'Outfit', sans-serif !important; font-weight: 300 !important; }
+.stSelectbox svg { fill: var(--muted) !important; }
+
+/* ── RADIO ── */
+.stRadio > div { gap: 8px !important; flex-direction: column !important; }
 .stRadio > div > label {
-  background: rgba(255,255,255,0.03) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
-  border-radius: 2px !important; padding: 12px 16px !important;
-  color: var(--light) !important; font-size: 13px !important;
-  transition: all 0.15s !important; cursor: pointer !important;
+  background: var(--navy2) !important;
+  border: 1px solid var(--borderW) !important;
+  border-radius: 3px !important;
+  padding: 14px 18px !important;
+  color: var(--soft) !important;
+  font-size: 13.5px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 300 !important;
+  transition: all 0.2s !important;
+  cursor: pointer !important;
+  letter-spacing: 0.2px !important;
 }
 .stRadio > div > label:hover {
-  border-color: var(--gold) !important; color: var(--white) !important;
-  background: rgba(201,168,76,0.06) !important;
+  border-color: var(--goldB) !important;
+  color: var(--white) !important;
+  background: var(--navy3) !important;
+  transform: translateX(4px) !important;
 }
+[data-baseweb="radio"] input:checked + div { border-color: var(--gold) !important; }
 
-/* buttons */
+/* ── BUTTONS ── */
 .stButton > button {
   background: transparent !important;
-  border: 1px solid var(--gold) !important; color: var(--gold) !important;
-  border-radius: 2px !important; font-family: 'DM Sans',sans-serif !important;
-  font-size: 9.5px !important; font-weight: 500 !important;
-  letter-spacing: 3px !important; text-transform: uppercase !important;
-  padding: 16px 32px !important; transition: all 0.2s !important;
+  border: 1px solid var(--goldB) !important;
+  color: var(--gold) !important;
+  border-radius: 3px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 8.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 4px !important;
+  text-transform: uppercase !important;
+  padding: 18px 36px !important;
+  transition: all 0.25s !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+.stButton > button::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(135deg, var(--gold), var(--goldD)) !important;
+  opacity: 0 !important;
+  transition: opacity 0.25s !important;
 }
 .stButton > button:hover {
-  background: var(--gold) !important; color: var(--navy) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 8px 24px rgba(201,168,76,0.2) !important;
+  color: var(--ink) !important;
+  border-color: var(--gold) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 32px rgba(200,164,90,0.2), 0 4px 12px rgba(0,0,0,0.3) !important;
 }
+.stButton > button:hover::before { opacity: 1 !important; }
+.stButton > button span { position: relative; z-index: 1; }
+
 .stDownloadButton > button {
-  background: var(--gold) !important;
-  border: 1px solid var(--gold) !important; color: var(--navy) !important;
-  border-radius: 2px !important; font-family: 'DM Sans',sans-serif !important;
-  font-size: 9.5px !important; font-weight: 600 !important;
-  letter-spacing: 3px !important; text-transform: uppercase !important;
-  padding: 16px 32px !important; transition: all 0.2s !important;
+  background: linear-gradient(135deg, var(--gold), var(--goldD)) !important;
+  border: 1px solid transparent !important;
+  color: var(--ink) !important;
+  border-radius: 3px !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-size: 8.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 4px !important;
+  text-transform: uppercase !important;
+  padding: 18px 36px !important;
+  transition: all 0.25s !important;
 }
 .stDownloadButton > button:hover {
-  background: var(--gold2) !important;
-  box-shadow: 0 8px 32px rgba(201,168,76,0.3) !important;
-  transform: translateY(-1px) !important;
+  background: linear-gradient(135deg, var(--gold2), var(--gold)) !important;
+  box-shadow: 0 16px 40px rgba(200,164,90,0.3), 0 4px 16px rgba(0,0,0,0.3) !important;
+  transform: translateY(-2px) !important;
 }
 
-/* progress */
-.stProgress > div > div > div > div { background: var(--gold) !important; }
-.stProgress > div > div { background: rgba(255,255,255,0.06) !important; }
+/* ── PROGRESS ── */
+.stProgress > div > div > div > div {
+  background: linear-gradient(90deg, var(--goldD), var(--gold), var(--gold2)) !important;
+  border-radius: 2px !important;
+}
+.stProgress > div > div {
+  background: rgba(255,255,255,0.05) !important;
+  border-radius: 2px !important;
+  height: 3px !important;
+}
 
-/* spinner */
+/* ── SPINNER ── */
 .stSpinner > div { border-top-color: var(--gold) !important; }
+
+/* ── FORM CONTAINER ── */
+[data-testid="stForm"] {
+  background: var(--navy2) !important;
+  border: 1px solid var(--borderW) !important;
+  border-top: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+  padding: 32px 28px !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.35) !important;
+}
+
+/* ── ERROR ── */
+.stAlert {
+  background: rgba(180,60,60,0.08) !important;
+  border: 1px solid rgba(200,80,80,0.25) !important;
+  border-left: 2px solid rgba(200,80,80,0.6) !important;
+  border-radius: 3px !important;
+  color: #E0A0A0 !important;
+}
+
+/* ── DIVIDER ── */
+hr { border-color: var(--border) !important; opacity: 0.4 !important; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--navy); }
+::-webkit-scrollbar-thumb { background: var(--goldD); border-radius: 2px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -357,7 +582,7 @@ for k,v in [("step",0),("data",{}),("cv_text",None)]:
 # ── BRAND BAR ─────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="brand-bar">
-  <div class="brand-name">Dawood</div>
+  <div class="brand-name">Dawood<span class="brand-dot"></span></div>
   <div class="brand-tag">Recruitment</div>
 </div>
 """, unsafe_allow_html=True)
@@ -368,15 +593,28 @@ st.markdown("""
 if st.session_state.step == 0:
     st.markdown("""
     <div class="hero-eyebrow">Career Assessment Platform</div>
-    <div class="hero-title">ابدأ<br><em>مسيرتك</em><br>المهنية</div>
+    <div class="hero-title">
+      ابدأ
+      <span><em>مسيرتك</em></span>
+      المهنية
+    </div>
     <div class="hero-sub">
       منصة متخصصة في تقييم المرشحين<br>
-      وإعداد سيرة ذاتية احترافية جاهزة للتقديم
+      وإعداد <strong>سيرة ذاتية احترافية</strong> جاهزة للتقديم
     </div>
     <div class="stats-grid">
-      <div class="stat-cell"><div class="stat-num">4</div><div class="stat-lbl">دقائق</div></div>
-      <div class="stat-cell"><div class="stat-num">ATS</div><div class="stat-lbl">محسّن</div></div>
-      <div class="stat-cell"><div class="stat-num">PDF</div><div class="stat-lbl">احترافي</div></div>
+      <div class="stat-cell">
+        <div class="stat-num">4</div>
+        <div class="stat-lbl">دقائق فقط</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">ATS</div>
+        <div class="stat-lbl">محسّن بالكامل</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num">PDF</div>
+        <div class="stat-lbl">احترافي</div>
+      </div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -398,7 +636,7 @@ elif st.session_state.step == 1:
         city      = st.selectbox("المدينة",              ["اختر","القاهرة","الإسكندرية","الجيزة","المنصورة","أخرى"])
         education = st.selectbox("المؤهل الدراسي",       ["اختر","طالب جامعي","بكالوريوس","دبلوم","ماجستير","ثانوية"])
         major     = st.text_input("التخصص",              value=st.session_state.data.get("major",""))
-        submitted = st.form_submit_button("التالي", use_container_width=True)
+        submitted = st.form_submit_button("التالي ←", use_container_width=True)
 
         if submitted:
             if not name or not email or not phone:
@@ -431,13 +669,13 @@ elif st.session_state.step == 2:
         q3 = st.radio("بيئة الشغل المفضلة عندك؟", q3_opts)
         q4 = st.radio("لو الشغل صعب في البداية، هتعمل إيه؟", q4_opts)
         q5 = st.radio("إيه اللي يحفزك في الشغل؟", q5_opts)
-        open_q = st.text_area("عرّف عن نفسك في 3 جمل", value=st.session_state.data.get("open_q",""), height=100)
+        open_q = st.text_area("عرّف عن نفسك في 3 جمل", value=st.session_state.data.get("open_q",""), height=110)
 
         col_back, col_next = st.columns(2)
         with col_back:
-            back = st.form_submit_button("رجوع", use_container_width=True)
+            back = st.form_submit_button("← رجوع", use_container_width=True)
         with col_next:
-            submitted2 = st.form_submit_button("إنشاء السيرة الذاتية", use_container_width=True)
+            submitted2 = st.form_submit_button("إنشاء السيرة الذاتية ✦", use_container_width=True)
 
         if back:
             st.session_state.step = 1
@@ -529,7 +767,7 @@ IMPORTANT RULES:
         st.session_state.cv_text = result
         save_to_csv(data)
 
-    st.markdown(f'<div class="success-banner">✓ تم إعداد سيرتك الذاتية بنجاح — {data["name"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="success-banner">تم إعداد سيرتك الذاتية بنجاح — {data["name"]}</div>', unsafe_allow_html=True)
     st.markdown('<div class="sec-label">معاينة السيرة الذاتية</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="cv-box">{st.session_state.cv_text}</div>', unsafe_allow_html=True)
 
@@ -537,7 +775,7 @@ IMPORTANT RULES:
     safe_name  = data['name'].replace(' ','_')
 
     st.download_button(
-        label="تحميل السيرة الذاتية PDF",
+        label="تحميل السيرة الذاتية — PDF",
         data=pdf_buffer,
         file_name=f"CV_{safe_name}.pdf",
         mime="application/pdf",
@@ -553,6 +791,6 @@ IMPORTANT RULES:
         st.rerun()
 
     st.markdown(
-        '<p style="text-align:center;font-size:12px;color:#4A5568;margin-top:20px;letter-spacing:1px;">سيتم التواصل معك قريباً</p>',
+        '<p style="text-align:center;font-size:11px;color:#3A4558;margin-top:28px;letter-spacing:2px;font-family:Outfit,sans-serif;">سيتم التواصل معك قريباً</p>',
         unsafe_allow_html=True
     )
