@@ -4,26 +4,31 @@ import csv
 import os
 from datetime import datetime
 
-GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
 def ask_ai(prompt):
     try:
         response = requests.post(
-            url=f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key={GEMINI_API_KEY}",
-            headers={"Content-Type": "application/json"},
-            json={"contents": [{"parts": [{"text": prompt}]}]},
+            url="https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama3-8b-8192",
+                "messages": [{"role": "user", "content": prompt}]
+            },
             timeout=30
         )
         result = response.json()
-        if "candidates" in result:
-            return result["candidates"][0]["content"]["parts"][0]["text"]
+        if "choices" in result:
+            return result["choices"][0]["message"]["content"]
         else:
             st.error(f"❌ خطأ: {result}")
             return None
     except Exception as e:
         st.error(f"❌ خطأ: {str(e)}")
         return None
-
 
 def save_to_csv(data):
     filename = "applicants.csv"
