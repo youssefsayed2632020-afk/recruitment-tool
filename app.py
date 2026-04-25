@@ -4,7 +4,7 @@ from fpdf import FPDF
 import io
 
 # API Key
-genai.configure(api_key="AIzaSyADbFZCe1sL31Re8Q-4uWsfA1LilasIID8")
+genai.configure(api_key="AIzaSyB2TTLC7Z_B39DjLHq7CL07tY6GpnKgcTo")
 model = genai.GenerativeModel("gemini-2.0-flash")
 st.set_page_config(page_title="فرصتك المهنية", page_icon="🚀", layout="centered")
 
