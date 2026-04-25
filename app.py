@@ -1,8 +1,18 @@
 import streamlit as st
-import google.generativeai as genai
+import requests
 
-genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-model = genai.GenerativeModel("gemini-2.0-flash-lite")
+OPENROUTER_API_KEY = st.secrets["OPENROUTER_API_KEY"]
+
+def ask_ai(prompt):
+    response = requests.post(
+        url="https://openrouter.ai/api/v1/chat/completions",
+        headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}"},
+        json={
+            "model": "mistralai/mistral-7b-instruct:free",
+            "messages": [{"role": "user", "content": prompt}]
+        }
+    )
+    return response.json()["choices"][0]["message"]["content"]
 
 st.set_page_config(page_title="فرصتك المهنية", page_icon="🚀", layout="centered")
 
@@ -10,8 +20,6 @@ if "step" not in st.session_state:
     st.session_state.step = 0
 if "data" not in st.session_state:
     st.session_state.data = {}
-if "cv_text" not in st.session_state:
-    st.session_state.cv_text = ""
 
 if st.session_state.step == 0:
     st.title("🚀 ابدأ مسيرتك المهنية")
@@ -102,21 +110,18 @@ elif st.session_state.step == 3:
     st.header("🤖 جاري تحليل شخصيتك...")
     data = st.session_state.data
     prompt = f"""
-أنت خبير موارد بشرية متخصص في اختيار كوادر Sales وMarketing.
-قم بتحليل هذا المرشح وإنشاء CV احترافي.
+أنت خبير موارد بشرية متخصص في Sales وMarketing.
+حلل هذا المرشح وأنشئ CV احترافي.
 
-بيانات المرشح:
-- الاسم: {data['name']}
-- المدينة: {data['city']}
-- المؤهل: {data['education']} - {data['major']}
-
-إجابات الشخصية:
-- التعامل مع رفض العميل: {data['q1']}
-- وصف نفسه: {data['q2']}
-- بيئة الشغل: {data['q3']}
-- التعامل مع الصعوبات: {data['q4']}
-- المحفز: {data['q5']}
-- عن نفسه: {data['open_q']}
+الاسم: {data['name']}
+المدينة: {data['city']}
+المؤهل: {data['education']} - {data['major']}
+التعامل مع رفض العميل: {data['q1']}
+وصف نفسه: {data['q2']}
+بيئة الشغل: {data['q3']}
+التعامل مع الصعوبات: {data['q4']}
+المحفز: {data['q5']}
+عن نفسه: {data['open_q']}
 
 المطلوب:
 1. تقييم من 10
@@ -124,10 +129,8 @@ elif st.session_state.step == 3:
 3. CV احترافي كامل
 4. توصية: هل يناسب Sales؟
 """
-    with st.spinner("🔄 الذكاء الاصطناعي بيحلل..."):
-        response = model.generate_content(prompt)
-        cv_text = response.text
-        st.session_state.cv_text = cv_text
+    with st.spinner("🔄 جاري التحليل..."):
+        cv_text = ask_ai(prompt)
     st.success("✅ تم التحليل بنجاح!")
     st.markdown("---")
     st.subheader("📄 السيرة الذاتية:")
