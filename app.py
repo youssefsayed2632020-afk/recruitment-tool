@@ -1,13 +1,11 @@
 import streamlit as st
 import google.generativeai as genai
-from fpdf import FPDF
-import io
 
-# API Key
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+model = genai.GenerativeModel("gemini-2.0-flash-lite")
 
 st.set_page_config(page_title="فرصتك المهنية", page_icon="🚀", layout="centered")
-model = genai.GenerativeModel("gemini-2.0-flash-lite")
+
 if "step" not in st.session_state:
     st.session_state.step = 0
 if "data" not in st.session_state:
@@ -102,12 +100,10 @@ elif st.session_state.step == 2:
 elif st.session_state.step == 3:
     st.progress(100)
     st.header("🤖 جاري تحليل شخصيتك...")
-
     data = st.session_state.data
-
     prompt = f"""
 أنت خبير موارد بشرية متخصص في اختيار كوادر Sales وMarketing.
-قم بتحليل هذا المرشح وإنشاء CV احترافي باللغة العربية والإنجليزية.
+قم بتحليل هذا المرشح وإنشاء CV احترافي.
 
 بيانات المرشح:
 - الاسم: {data['name']}
@@ -116,36 +112,25 @@ elif st.session_state.step == 3:
 
 إجابات الشخصية:
 - التعامل مع رفض العميل: {data['q1']}
-- وصف نفسه في الشغل: {data['q2']}
-- بيئة الشغل المفضلة: {data['q3']}
+- وصف نفسه: {data['q2']}
+- بيئة الشغل: {data['q3']}
 - التعامل مع الصعوبات: {data['q4']}
-- المحفز الأساسي: {data['q5']}
+- المحفز: {data['q5']}
 - عن نفسه: {data['open_q']}
 
-معايير التقييم (شركة Deals Outsourcing):
-- الطاقة الإيجابية والروح العالية
-- الجاهزية للتعلم والتطور
-- مهارات التواصل والإقناع
-- المرونة وقبول التدريب
-
 المطلوب:
-1. تقييم المرشح من 10 بناءً على المعايير
+1. تقييم من 10
 2. أبرز 3 نقاط قوة
-3. CV احترافي جاهز يشمل: ملخص شخصي، المهارات، المؤهل
-4. توصية نهائية: هل يناسب Deals Outsourcing؟
-
-اكتب CV كامل واضح ومنظم.
+3. CV احترافي كامل
+4. توصية: هل يناسب Sales؟
 """
-
     with st.spinner("🔄 الذكاء الاصطناعي بيحلل..."):
         response = model.generate_content(prompt)
         cv_text = response.text
         st.session_state.cv_text = cv_text
-
     st.success("✅ تم التحليل بنجاح!")
     st.markdown("---")
-    st.subheader("📄 السيرة الذاتية المُولَّدة:")
+    st.subheader("📄 السيرة الذاتية:")
     st.markdown(cv_text)
-
     st.markdown("---")
     st.info("📧 سيتم إرسال CV على إيميلك قريباً")
