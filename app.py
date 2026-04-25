@@ -1,4 +1,11 @@
 import streamlit as st
+import google.generativeai as genai
+from fpdf import FPDF
+import io
+
+# API Key
+genai.configure(api_key="AIzaSyADbFZCe1sL31Re8Q-4uWsfA1LilasIID8")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 st.set_page_config(page_title="فرصتك المهنية", page_icon="🚀", layout="centered")
 
@@ -6,6 +13,8 @@ if "step" not in st.session_state:
     st.session_state.step = 0
 if "data" not in st.session_state:
     st.session_state.data = {}
+if "cv_text" not in st.session_state:
+    st.session_state.cv_text = ""
 
 if st.session_state.step == 0:
     st.title("🚀 ابدأ مسيرتك المهنية")
@@ -77,7 +86,7 @@ elif st.session_state.step == 2:
             "الاستقرار والبيئة المريحة",
             "التأثير وإني أحس إن شغلي مهم"])
         open_q = st.text_area("6️⃣ عرّف عن نفسك في 3 جمل — ليه تستاهل الفرصة دي؟")
-        submitted2 = st.form_submit_button("التالي ←")
+        submitted2 = st.form_submit_button("تحليل شخصيتي وأنشئ CV ←")
         if submitted2:
             if not open_q:
                 st.error("⚠️ من فضلك اكتب عن نفسك")
@@ -93,7 +102,51 @@ elif st.session_state.step == 2:
 
 elif st.session_state.step == 3:
     st.progress(100)
-    st.header("🎉 تم! بياناتك اتسجلت بنجاح")
-    st.success("✅ شكراً " + st.session_state.data.get("name", "") + "! هنتواصل معاك قريباً")
-    st.balloons()
-    st.info("📧 هيوصلك CV احترافي على إيميلك خلال 24 ساعة")
+    st.header("🤖 جاري تحليل شخصيتك...")
+
+    data = st.session_state.data
+
+    prompt = f"""
+أنت خبير موارد بشرية متخصص في اختيار كوادر Sales وMarketing.
+قم بتحليل هذا المرشح وإنشاء CV احترافي باللغة العربية والإنجليزية.
+
+بيانات المرشح:
+- الاسم: {data['name']}
+- المدينة: {data['city']}
+- المؤهل: {data['education']} - {data['major']}
+
+إجابات الشخصية:
+- التعامل مع رفض العميل: {data['q1']}
+- وصف نفسه في الشغل: {data['q2']}
+- بيئة الشغل المفضلة: {data['q3']}
+- التعامل مع الصعوبات: {data['q4']}
+- المحفز الأساسي: {data['q5']}
+- عن نفسه: {data['open_q']}
+
+معايير التقييم (شركة Deals Outsourcing):
+- الطاقة الإيجابية والروح العالية
+- الجاهزية للتعلم والتطور
+- مهارات التواصل والإقناع
+- المرونة وقبول التدريب
+
+المطلوب:
+1. تقييم المرشح من 10 بناءً على المعايير
+2. أبرز 3 نقاط قوة
+3. CV احترافي جاهز يشمل: ملخص شخصي، المهارات، المؤهل
+4. توصية نهائية: هل يناسب Deals Outsourcing؟
+
+اكتب CV كامل واضح ومنظم.
+"""
+
+    with st.spinner("🔄 الذكاء الاصطناعي بيحلل..."):
+        response = model.generate_content(prompt)
+        cv_text = response.text
+        st.session_state.cv_text = cv_text
+
+    st.success("✅ تم التحليل بنجاح!")
+    st.markdown("---")
+    st.subheader("📄 السيرة الذاتية المُولَّدة:")
+    st.markdown(cv_text)
+
+    st.markdown("---")
+    st.info("📧 سيتم إرسال CV على إيميلك قريباً")
