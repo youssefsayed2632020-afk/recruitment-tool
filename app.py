@@ -9,16 +9,21 @@ GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 def ask_ai(prompt):
     try:
         response = requests.post(
-            url=f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}",
+            url=f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}",
             headers={"Content-Type": "application/json"},
             json={"contents": [{"parts": [{"text": prompt}]}]},
             timeout=30
         )
         result = response.json()
-        return result["candidates"][0]["content"]["parts"][0]["text"]
+        if "candidates" in result:
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            st.error(f"❌ خطأ: {result}")
+            return None
     except Exception as e:
         st.error(f"❌ خطأ: {str(e)}")
         return None
+
 
 def save_to_csv(data):
     filename = "applicants.csv"
