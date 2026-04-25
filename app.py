@@ -127,54 +127,66 @@ elif st.session_state.step == 3:
     if st.session_state.cv_text is None:
         st.header("🤖 جاري تحليل شخصيتك...")
         prompt = f"""
-أنت خبير موارد بشرية متخصص في Sales وMarketing في مصر.
-مهمتك: اكتب تقرير تقييم + CV احترافي ATS-Friendly باللغة العربية فقط.
+You are a professional HR expert and ATS-certified resume writer specializing in Sales and Marketing roles in Egypt.
 
-بيانات المرشح:
-الاسم: {data['name']}
-الموبايل: {data['phone']}
-الإيميل: {data['email']}
-المدينة: {data['city']}
-المؤهل: {data['education']} - {data['major']}
-التعامل مع رفض العميل: {data['q1']}
-وصف نفسه: {data['q2']}
-بيئة الشغل: {data['q3']}
-التعامل مع الصعوبات: {data['q4']}
-المحفز: {data['q5']}
-عن نفسه: {data['open_q']}
+Your task: Write a professional ATS-optimized CV in English only. Use ONLY English. Do NOT use any Arabic or other languages.
 
-اكتب الناتج بالترتيب ده بالضبط:
+Candidate Information:
+- Full Name: {data['name']}
+- Phone: {data['phone']}
+- Email: {data['email']}
+- City: {data['city']}, Egypt
+- Education: {data['education']} - {data['major']}
+- Handles client rejection by: {data['q1']}
+- Self description: {data['q2']}
+- Preferred work environment: {data['q3']}
+- Handles work challenges by: {data['q4']}
+- Motivated by: {data['q5']}
+- About himself: {data['open_q']}
 
-## تقرير التقييم
-- التقييم: X/10
-- السبب: (جملة واحدة)
-- نقاط القوة: (3 نقاط)
-- التوصية: مناسب لـ Sales / غير مناسب
+Write the CV in this EXACT format:
+
+## ASSESSMENT REPORT
+- Score: X/10
+- Strengths: (3 bullet points)
+- Recommendation: Suitable for Sales / Not Suitable
 
 ---
 
-## السيرة الذاتية
+## CURRICULUM VITAE
 
-الاسم: {data['name']}
-الموبايل: {data['phone']}
-الإيميل: {data['email']}
-المدينة: {data['city']}
+{data['name'].upper()}
+{data['city']}, Egypt | {data['phone']} | {data['email']}
 
-### الملخص المهني
-(3 جمل تصف المرشح بشكل احترافي تناسب وظائف Sales)
+PROFESSIONAL SUMMARY
+(Write 3 strong sentences describing the candidate for a Sales role. Use action verbs. ATS-friendly.)
 
-### المهارات
-- (مهارة 1)
-- (مهارة 2)
-- (مهارة 3)
-- (مهارة 4)
-- (مهارة 5)
+CORE COMPETENCIES
+- (skill 1)
+- (skill 2)
+- (skill 3)
+- (skill 4)
+- (skill 5)
+- (skill 6)
 
-### التعليم
-{data['education']} - {data['major']}
+EDUCATION
+{data['education']} in {data['major']}
+Egypt
 
-### لماذا أستحق هذه الفرصة
-{data['open_q']}
+KEY ATTRIBUTES
+- (attribute based on answers)
+- (attribute based on answers)
+- (attribute based on answers)
+
+LANGUAGES
+- Arabic: Native
+- English: Intermediate
+
+IMPORTANT RULES:
+- Use English ONLY. No Arabic. No Chinese. No other language.
+- No tables. No images. No special characters except dashes and bullets.
+- Keep it clean and ATS-friendly.
+- Do not add fake experience or fake companies.
 """
         with st.spinner("🔄 جاري التحليل..."):
             result = ask_ai(prompt)
@@ -186,7 +198,7 @@ elif st.session_state.step == 3:
     st.success("✅ تم التحليل بنجاح!")
     st.header(f"أهلاً {data['name']} 👋")
     st.markdown("---")
-    st.subheader("📄 تقرير التقييم والسيرة الذاتية:")
+    st.subheader("📄 Assessment & ATS CV:")
     st.markdown(st.session_state.cv_text)
     st.markdown("---")
     st.download_button(
