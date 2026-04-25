@@ -127,10 +127,13 @@ elif st.session_state.step == 3:
     if st.session_state.cv_text is None:
         st.header("🤖 جاري تحليل شخصيتك...")
         prompt = f"""
-أنت خبير موارد بشرية متخصص في Sales وMarketing.
-حلل هذا المرشح وأنشئ CV احترافي باللغة العربية.
+أنت خبير موارد بشرية متخصص في Sales وMarketing في مصر.
+مهمتك: اكتب تقرير تقييم + CV احترافي ATS-Friendly باللغة العربية فقط.
 
+بيانات المرشح:
 الاسم: {data['name']}
+الموبايل: {data['phone']}
+الإيميل: {data['email']}
 المدينة: {data['city']}
 المؤهل: {data['education']} - {data['major']}
 التعامل مع رفض العميل: {data['q1']}
@@ -140,11 +143,38 @@ elif st.session_state.step == 3:
 المحفز: {data['q5']}
 عن نفسه: {data['open_q']}
 
-المطلوب:
-1. تقييم من 10 مع تبرير
-2. أبرز 3 نقاط قوة
-3. CV احترافي كامل
-4. توصية: هل يناسب Sales؟
+اكتب الناتج بالترتيب ده بالضبط:
+
+## تقرير التقييم
+- التقييم: X/10
+- السبب: (جملة واحدة)
+- نقاط القوة: (3 نقاط)
+- التوصية: مناسب لـ Sales / غير مناسب
+
+---
+
+## السيرة الذاتية
+
+الاسم: {data['name']}
+الموبايل: {data['phone']}
+الإيميل: {data['email']}
+المدينة: {data['city']}
+
+### الملخص المهني
+(3 جمل تصف المرشح بشكل احترافي تناسب وظائف Sales)
+
+### المهارات
+- (مهارة 1)
+- (مهارة 2)
+- (مهارة 3)
+- (مهارة 4)
+- (مهارة 5)
+
+### التعليم
+{data['education']} - {data['major']}
+
+### لماذا أستحق هذه الفرصة
+{data['open_q']}
 """
         with st.spinner("🔄 جاري التحليل..."):
             result = ask_ai(prompt)
@@ -156,7 +186,7 @@ elif st.session_state.step == 3:
     st.success("✅ تم التحليل بنجاح!")
     st.header(f"أهلاً {data['name']} 👋")
     st.markdown("---")
-    st.subheader("📄 السيرة الذاتية والتحليل:")
+    st.subheader("📄 تقرير التقييم والسيرة الذاتية:")
     st.markdown(st.session_state.cv_text)
     st.markdown("---")
     st.download_button(
