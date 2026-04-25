@@ -5,9 +5,9 @@ import io
 
 # API Key
 genai.configure(api_key="AIzaSyB2TTLC7Z_B39DjLHq7CL07tY6GpnKgcTo")
-model = genai.GenerativeModel("gemini-1.5-flash-8b")
-st.set_page_config(page_title="فرصتك المهنية", page_icon="🚀", layout="centered")
 
+st.set_page_config(page_title="فرصتك المهنية", page_icon="🚀", layout="centered")
+model = genai.GenerativeModel("gemini-2.0-flash-lite")
 if "step" not in st.session_state:
     st.session_state.step = 0
 if "data" not in st.session_state:
