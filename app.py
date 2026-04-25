@@ -5,7 +5,7 @@ import io
 
 # API Key
 genai.configure(api_key="AIzaSyB2TTLC7Z_B39DjLHq7CL07tY6GpnKgcTo")
-model = genai.GenerativeModel("gemini-2.0-flash")
+model = genai.GenerativeModel("gemini-1.5-flash-8b")
 st.set_page_config(page_title="فرصتك المهنية", page_icon="🚀", layout="centered")
 
 if "step" not in st.session_state:
