@@ -16,71 +16,105 @@ st.set_page_config(page_title="Dawood Recruitment", page_icon="◈", layout="cen
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@200;300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500;600&display=swap');
 
 :root {
-  --ink:     #05080F;
-  --navy:    #080E1C;
-  --navy2:   #0C1525;
-  --navy3:   #111D30;
-  --gold:    #C8A45A;
-  --gold2:   #E2C07E;
-  --goldD:   #A0813A;
-  --goldL:   rgba(200,164,90,0.10);
-  --goldM:   rgba(200,164,90,0.20);
-  --goldB:   rgba(200,164,90,0.35);
-  --white:   #EDE9E0;
-  --muted:   #6B7485;
-  --soft:    #9BA5B5;
-  --glass:   rgba(255,255,255,0.03);
-  --glassH:  rgba(255,255,255,0.06);
-  --border:  rgba(200,164,90,0.15);
-  --borderW: rgba(255,255,255,0.06);
+  --ink:    #04060E;
+  --navy:   #070A18;
+  --navy2:  #0A0F20;
+  --navy3:  #0E1428;
+  --gold:   #C8A45A;
+  --gold2:  #E2C07E;
+  --gold3:  #F5DFA0;
+  --goldD:  #9A7C38;
+  --goldB:  rgba(200,164,90,0.28);
+  --goldL:  rgba(200,164,90,0.07);
+  --goldM:  rgba(200,164,90,0.14);
+  --white:  #EDE9DF;
+  --muted:  #5C6478;
+  --soft:   #8E98B0;
+  --mid:    #B0B8CC;
+  --border: rgba(200,164,90,0.12);
+  --borderW:rgba(255,255,255,0.05);
+  --borderG:rgba(200,164,90,0.20);
 }
 
-/* ── BASE ── */
 * { box-sizing: border-box; }
 
 .stApp {
   background: var(--ink) !important;
   font-family: 'Outfit', sans-serif !important;
   background-image:
-    radial-gradient(ellipse 90% 60% at 15% -5%,  rgba(200,164,90,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 50% at 85% 105%, rgba(200,164,90,0.04) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 50%  50%, rgba(12,21,37,0.8)    0%, transparent 100%) !important;
+    radial-gradient(ellipse 110% 70% at 10% -10%, rgba(200,164,90,0.055) 0%, transparent 50%),
+    radial-gradient(ellipse 80%  60% at 90% 110%, rgba(200,164,90,0.035) 0%, transparent 50%),
+    radial-gradient(ellipse 60%  80% at 50%  50%, rgba(10,18,40,0.9)     0%, transparent 100%) !important;
 }
 
 #MainMenu, footer, header { visibility: hidden !important; }
 .stDeployButton { display: none !important; }
+
 .main .block-container {
   max-width: 640px !important;
-  padding: 0 1.5rem 7rem !important;
+  padding: 0 1.5rem 8rem !important;
   margin: 0 auto !important;
 }
 
-/* ══════════════════════════════════════
-   BRAND BAR
-══════════════════════════════════════ */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--goldD), var(--gold)); border-radius: 2px; }
+
+/* ═══ KEYFRAMES ═══ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shimmer {
+  0%   { left: -100%; }
+  100% { left: 200%;  }
+}
+@keyframes pulseGold {
+  0%,100% { opacity: 0.5; }
+  50%     { opacity: 1;   }
+}
+@keyframes dotBeat {
+  0%,100% { transform: scale(1);   }
+  50%     { transform: scale(1.7); }
+}
+@keyframes lineGrow {
+  from { width: 0; opacity: 0; }
+  to   { width: 100%; opacity: 1; }
+}
+@keyframes softGlow {
+  0%,100% { box-shadow: 0 0 0 0 rgba(200,164,90,0); }
+  50%     { box-shadow: 0 0 20px 2px rgba(200,164,90,0.10); }
+}
+
+/* ═══ BRAND BAR ═══ */
 .brand-bar {
-  padding: 32px 0 28px;
-  margin-bottom: 60px;
+  padding: 34px 0 28px;
+  margin-bottom: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
+  animation: fadeIn 0.8s ease both;
 }
 .brand-bar::after {
   content: '';
   position: absolute;
   bottom: 0; left: 0; right: 0;
   height: 1px;
-  background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
-  opacity: 0.3;
+  background: linear-gradient(90deg, var(--gold) 0%, rgba(200,164,90,0.2) 55%, transparent 90%);
+  animation: lineGrow 1.1s cubic-bezier(0.4,0,0.2,1) 0.2s both;
 }
 .brand-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 18px; font-weight: 600;
-  color: var(--white); letter-spacing: 6px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 600;
+  color: var(--white); letter-spacing: 7px;
   text-transform: uppercase;
 }
 .brand-dot {
@@ -88,110 +122,111 @@ st.markdown("""
   background: var(--gold);
   border-radius: 50%;
   display: inline-block;
-  margin: 0 2px 1px;
+  margin: 0 2px 2px;
   vertical-align: middle;
+  animation: dotBeat 2.8s ease-in-out infinite;
 }
 .brand-tag {
-  font-family: 'Outfit', sans-serif;
-  font-size: 8px; letter-spacing: 4px;
+  font-size: 8px; letter-spacing: 5px;
   text-transform: uppercase;
   color: var(--gold); font-weight: 300;
+  opacity: 0.65;
 }
 
-/* ══════════════════════════════════════
-   HERO
-══════════════════════════════════════ */
+/* ═══ HERO ═══ */
 .hero-eyebrow {
   font-size: 8px; letter-spacing: 5px;
   text-transform: uppercase; color: var(--gold);
-  margin-bottom: 24px; font-weight: 400;
+  margin-bottom: 26px; font-weight: 400;
   display: flex; align-items: center; gap: 14px;
-  opacity: 0.85;
+  opacity: 0;
+  animation: fadeUp 0.7s ease 0.25s both;
 }
 .hero-eyebrow::before {
-  content: '◈';
-  font-size: 10px;
+  content: '◈'; font-size: 10px;
+  animation: pulseGold 3s ease-in-out infinite;
 }
 .hero-eyebrow::after {
-  content: '';
-  flex: 1; height: 1px;
+  content: ''; flex: 1; height: 1px;
   background: linear-gradient(90deg, var(--goldB), transparent);
 }
 
 .hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 64px; font-weight: 400;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 68px; font-weight: 400;
   color: var(--white); line-height: 1.0;
-  margin-bottom: 8px; letter-spacing: -1.5px;
+  margin-bottom: 8px; letter-spacing: -1px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.4s both;
 }
-.hero-title em {
-  color: var(--gold);
-  font-style: italic;
-  font-weight: 400;
-}
-.hero-title span {
-  display: block;
-  font-size: 52px;
-}
+.hero-title em   { color: var(--gold); font-style: italic; }
+.hero-title span { display: block; font-size: 54px; }
 
 .hero-sub {
   font-size: 14px; color: var(--muted);
-  font-weight: 300; line-height: 1.85;
+  font-weight: 300; line-height: 1.9;
   margin: 28px 0 52px; max-width: 380px;
   letter-spacing: 0.2px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.55s both;
 }
-.hero-sub strong {
-  color: var(--soft);
-  font-weight: 400;
-}
+.hero-sub strong { color: var(--soft); font-weight: 400; }
 
-/* ══════════════════════════════════════
-   STATS GRID
-══════════════════════════════════════ */
+/* ═══ STATS GRID ═══ */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 5px;
   overflow: hidden;
   margin-bottom: 52px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.7s both;
 }
 .stat-cell {
   background: var(--navy2);
-  padding: 28px 16px;
+  padding: 30px 16px;
   text-align: center;
   position: relative;
-  transition: background 0.3s;
+  overflow: hidden;
+  transition: background 0.35s ease;
 }
+/* shimmer sweep */
+.stat-cell::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 55%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(200,164,90,0.06), transparent);
+  transition: none;
+  pointer-events: none;
+}
+.stat-cell:hover::after { animation: shimmer 0.65s ease forwards; }
+/* top accent line */
 .stat-cell::before {
   content: '';
   position: absolute;
   top: 0; left: 50%; transform: translateX(-50%);
-  width: 30px; height: 1px;
+  width: 0; height: 1px;
   background: var(--gold);
-  opacity: 0;
-  transition: opacity 0.3s;
+  transition: width 0.4s ease;
 }
 .stat-cell:hover { background: var(--navy3); }
-.stat-cell:hover::before { opacity: 1; }
+.stat-cell:hover::before { width: 48%; }
 
 .stat-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 28px; font-weight: 600;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 600;
   color: var(--gold); line-height: 1;
   margin-bottom: 8px; letter-spacing: 1px;
 }
 .stat-lbl {
   font-size: 7.5px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--muted);
-  font-weight: 400;
+  text-transform: uppercase; color: var(--muted); font-weight: 400;
 }
 
-/* ══════════════════════════════════════
-   SECTION LABEL
-══════════════════════════════════════ */
+/* ═══ SECTION LABEL ═══ */
 .sec-label {
   font-size: 8px; letter-spacing: 4px;
   text-transform: uppercase; color: var(--gold);
@@ -199,228 +234,226 @@ st.markdown("""
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 10px;
   font-weight: 400;
+  animation: fadeIn 0.6s ease both;
 }
-.sec-label::before { content: '—'; opacity: 0.5; }
+.sec-label::before { content: '—'; opacity: 0.45; }
 
-/* ══════════════════════════════════════
-   SUCCESS BANNER
-══════════════════════════════════════ */
+/* ═══ SUCCESS BANNER ═══ */
 .success-banner {
-  background: linear-gradient(135deg, rgba(200,164,90,0.08), rgba(200,164,90,0.03));
+  background: linear-gradient(135deg, rgba(200,164,90,0.09), rgba(200,164,90,0.03));
   border: 1px solid var(--goldB);
   border-left: 2px solid var(--gold);
   padding: 16px 20px;
-  border-radius: 3px;
+  border-radius: 4px;
   color: var(--gold2);
   font-size: 13px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   margin-bottom: 32px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: flex; align-items: center; gap: 12px;
+  animation: fadeUp 0.6s ease both, softGlow 3.5s ease 0.8s infinite;
 }
-.success-banner::before { content: '✦'; font-size: 12px; opacity: 0.7; }
+.success-banner::before {
+  content: '✦'; font-size: 12px; opacity: 0.65;
+  animation: pulseGold 2.2s ease-in-out infinite;
+}
 
-/* ══════════════════════════════════════
-   CV BOX
-══════════════════════════════════════ */
+/* ═══ CV BOX ═══ */
 .cv-box {
   background: var(--navy2);
   border: 1px solid var(--borderW);
-  border-top: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 32px 28px;
-  font-size: 12.5px;
-  line-height: 1.9;
+  border-top: 1px solid var(--borderG);
+  border-radius: 5px;
+  padding: 34px 30px;
+  font-size: 12.5px; line-height: 1.95;
   color: var(--soft);
   white-space: pre-wrap;
-  font-family: 'Outfit', sans-serif;
-  font-weight: 300;
+  font-family: 'Outfit', sans-serif; font-weight: 300;
   margin-bottom: 28px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+  animation: fadeUp 0.7s ease both;
+  position: relative; overflow: hidden;
+}
+/* entry shimmer across the top border */
+.cv-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 55%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,164,90,0.55), transparent);
+  animation: shimmer 2s ease 0.4s both;
 }
 
-/* ══════════════════════════════════════
-   INPUTS
-══════════════════════════════════════ */
+/* ═══ PROGRESS ═══ */
+.stProgress > div > div > div > div {
+  background: linear-gradient(90deg, var(--goldD), var(--gold), var(--gold2)) !important;
+  border-radius: 2px !important;
+  position: relative; overflow: hidden;
+}
+.stProgress > div > div > div > div::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 55%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+.stProgress > div > div {
+  background: rgba(255,255,255,0.05) !important;
+  border-radius: 2px !important; height: 2px !important;
+}
+
+/* ═══ INPUTS ═══ */
 .stTextInput label, .stTextArea label,
 .stSelectbox label, .stRadio > label {
-  font-size: 8.5px !important;
-  letter-spacing: 3px !important;
-  text-transform: uppercase !important;
-  color: var(--muted) !important;
-  font-weight: 400 !important;
-  font-family: 'Outfit', sans-serif !important;
+  font-size: 8.5px !important; letter-spacing: 3px !important;
+  text-transform: uppercase !important; color: var(--muted) !important;
+  font-weight: 400 !important; font-family: 'Outfit', sans-serif !important;
   margin-bottom: 8px !important;
 }
 
 .stTextInput > div > div > input {
   background: var(--navy2) !important;
   border: 1px solid var(--borderW) !important;
-  border-radius: 3px !important;
-  color: var(--white) !important;
+  border-radius: 4px !important; color: var(--white) !important;
   font-family: 'Outfit', sans-serif !important;
-  font-size: 14px !important;
-  font-weight: 300 !important;
+  font-size: 14px !important; font-weight: 300 !important;
   padding: 15px 18px !important;
-  transition: all 0.25s !important;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease !important;
   letter-spacing: 0.3px !important;
 }
 .stTextInput > div > div > input:focus {
-  border-color: var(--gold) !important;
-  background: var(--navy3) !important;
-  box-shadow: 0 0 0 3px rgba(200,164,90,0.08) !important;
+  border-color: var(--gold) !important; background: var(--navy3) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.07), 0 4px 18px rgba(0,0,0,0.28) !important;
 }
-.stTextInput > div > div > input::placeholder { color: var(--muted) !important; opacity: 0.5 !important; }
+.stTextInput > div > div > input::placeholder { color: var(--muted) !important; opacity: 0.45 !important; }
 
 .stTextArea > div > div > textarea {
   background: var(--navy2) !important;
   border: 1px solid var(--borderW) !important;
-  border-radius: 3px !important;
-  color: var(--white) !important;
+  border-radius: 4px !important; color: var(--white) !important;
   font-family: 'Outfit', sans-serif !important;
-  font-size: 14px !important;
-  font-weight: 300 !important;
+  font-size: 14px !important; font-weight: 300 !important;
   padding: 15px 18px !important;
-  transition: all 0.25s !important;
-  line-height: 1.7 !important;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease !important;
+  line-height: 1.75 !important;
 }
 .stTextArea > div > div > textarea:focus {
-  border-color: var(--gold) !important;
-  background: var(--navy3) !important;
-  box-shadow: 0 0 0 3px rgba(200,164,90,0.08) !important;
+  border-color: var(--gold) !important; background: var(--navy3) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.07), 0 4px 18px rgba(0,0,0,0.28) !important;
 }
 
 .stSelectbox > div > div {
   background: var(--navy2) !important;
   border: 1px solid var(--borderW) !important;
-  border-radius: 3px !important;
-  color: var(--white) !important;
+  border-radius: 4px !important; color: var(--white) !important;
   padding: 4px 0 !important;
-  transition: all 0.25s !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 .stSelectbox > div > div:focus-within {
   border-color: var(--gold) !important;
-  box-shadow: 0 0 0 3px rgba(200,164,90,0.08) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.07) !important;
 }
 .stSelectbox > div > div > div { color: var(--white) !important; font-family: 'Outfit', sans-serif !important; font-weight: 300 !important; }
 .stSelectbox svg { fill: var(--muted) !important; }
 
-/* ── RADIO ── */
+/* ─── RADIO ─── */
 .stRadio > div { gap: 8px !important; flex-direction: column !important; }
 .stRadio > div > label {
   background: var(--navy2) !important;
   border: 1px solid var(--borderW) !important;
-  border-radius: 3px !important;
-  padding: 14px 18px !important;
-  color: var(--soft) !important;
-  font-size: 13.5px !important;
-  font-family: 'Outfit', sans-serif !important;
-  font-weight: 300 !important;
-  transition: all 0.2s !important;
-  cursor: pointer !important;
-  letter-spacing: 0.2px !important;
+  border-radius: 4px !important; padding: 14px 18px !important;
+  color: var(--soft) !important; font-size: 13.5px !important;
+  font-family: 'Outfit', sans-serif !important; font-weight: 300 !important;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, color 0.25s ease !important;
+  cursor: pointer !important; letter-spacing: 0.2px !important;
 }
 .stRadio > div > label:hover {
-  border-color: var(--goldB) !important;
-  color: var(--white) !important;
-  background: var(--navy3) !important;
-  transform: translateX(4px) !important;
+  border-color: var(--goldB) !important; color: var(--white) !important;
+  background: var(--navy3) !important; transform: translateX(5px) !important;
 }
 [data-baseweb="radio"] input:checked + div { border-color: var(--gold) !important; }
 
-/* ── BUTTONS ── */
+/* ─── BUTTONS ─── */
 .stButton > button {
   background: transparent !important;
   border: 1px solid var(--goldB) !important;
-  color: var(--gold) !important;
-  border-radius: 3px !important;
+  color: var(--gold) !important; border-radius: 4px !important;
   font-family: 'Outfit', sans-serif !important;
-  font-size: 8.5px !important;
-  font-weight: 500 !important;
-  letter-spacing: 4px !important;
-  text-transform: uppercase !important;
+  font-size: 8.5px !important; font-weight: 500 !important;
+  letter-spacing: 4px !important; text-transform: uppercase !important;
   padding: 18px 36px !important;
-  transition: all 0.25s !important;
-  position: relative !important;
-  overflow: hidden !important;
+  transition: color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+  position: relative !important; overflow: hidden !important;
 }
 .stButton > button::before {
-  content: '' !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: linear-gradient(135deg, var(--gold), var(--goldD)) !important;
-  opacity: 0 !important;
-  transition: opacity 0.25s !important;
+  content: '' !important; position: absolute !important; inset: 0 !important;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--goldD) 100%) !important;
+  opacity: 0 !important; transition: opacity 0.3s ease !important;
+}
+.stButton > button::after {
+  content: '' !important; position: absolute !important;
+  top: 0; left: -100%; width: 55%; height: 100% !important;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.10), transparent) !important;
 }
 .stButton > button:hover {
-  color: var(--ink) !important;
-  border-color: var(--gold) !important;
+  color: var(--ink) !important; border-color: var(--gold) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 12px 32px rgba(200,164,90,0.2), 0 4px 12px rgba(0,0,0,0.3) !important;
+  box-shadow: 0 10px 28px rgba(200,164,90,0.18), 0 4px 10px rgba(0,0,0,0.25) !important;
 }
 .stButton > button:hover::before { opacity: 1 !important; }
+.stButton > button:hover::after  { animation: shimmer 0.55s ease forwards !important; }
 .stButton > button span { position: relative; z-index: 1; }
 
 .stDownloadButton > button {
-  background: linear-gradient(135deg, var(--gold), var(--goldD)) !important;
-  border: 1px solid transparent !important;
-  color: var(--ink) !important;
-  border-radius: 3px !important;
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 8.5px !important;
-  font-weight: 600 !important;
-  letter-spacing: 4px !important;
-  text-transform: uppercase !important;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--goldD) 100%) !important;
+  border: 1px solid transparent !important; color: var(--ink) !important;
+  border-radius: 4px !important; font-family: 'Outfit', sans-serif !important;
+  font-size: 8.5px !important; font-weight: 600 !important;
+  letter-spacing: 4px !important; text-transform: uppercase !important;
   padding: 18px 36px !important;
-  transition: all 0.25s !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease !important;
+  position: relative !important; overflow: hidden !important;
+}
+.stDownloadButton > button::after {
+  content: '' !important; position: absolute !important;
+  top: 0; left: -100%; width: 55%; height: 100% !important;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.18), transparent) !important;
 }
 .stDownloadButton > button:hover {
-  background: linear-gradient(135deg, var(--gold2), var(--gold)) !important;
-  box-shadow: 0 16px 40px rgba(200,164,90,0.3), 0 4px 16px rgba(0,0,0,0.3) !important;
+  background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%) !important;
+  box-shadow: 0 14px 36px rgba(200,164,90,0.28), 0 4px 12px rgba(0,0,0,0.25) !important;
   transform: translateY(-2px) !important;
 }
+.stDownloadButton > button:hover::after { animation: shimmer 0.55s ease forwards !important; }
 
-/* ── PROGRESS ── */
-.stProgress > div > div > div > div {
-  background: linear-gradient(90deg, var(--goldD), var(--gold), var(--gold2)) !important;
-  border-radius: 2px !important;
-}
-.stProgress > div > div {
-  background: rgba(255,255,255,0.05) !important;
-  border-radius: 2px !important;
-  height: 3px !important;
-}
-
-/* ── SPINNER ── */
+/* ─── SPINNER ─── */
 .stSpinner > div { border-top-color: var(--gold) !important; }
 
-/* ── FORM CONTAINER ── */
+/* ─── FORM CONTAINER ─── */
 [data-testid="stForm"] {
   background: var(--navy2) !important;
   border: 1px solid var(--borderW) !important;
-  border-top: 1px solid var(--border) !important;
-  border-radius: 4px !important;
-  padding: 32px 28px !important;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.35) !important;
+  border-top: 1px solid var(--borderG) !important;
+  border-radius: 5px !important; padding: 34px 30px !important;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03) !important;
+  animation: fadeUp 0.7s ease both !important;
+  position: relative !important; overflow: hidden !important;
+}
+[data-testid="stForm"]::before {
+  content: '' !important; position: absolute !important;
+  top: 0; left: -100%; width: 55%; height: 1px !important;
+  background: linear-gradient(90deg, transparent, rgba(200,164,90,0.45), transparent) !important;
+  animation: shimmer 1.4s ease 0.25s both !important;
 }
 
-/* ── ERROR ── */
+/* ─── ERROR ─── */
 .stAlert {
-  background: rgba(180,60,60,0.08) !important;
-  border: 1px solid rgba(200,80,80,0.25) !important;
-  border-left: 2px solid rgba(200,80,80,0.6) !important;
-  border-radius: 3px !important;
-  color: #E0A0A0 !important;
+  background: rgba(160,50,50,0.07) !important;
+  border: 1px solid rgba(200,80,80,0.2) !important;
+  border-left: 2px solid rgba(200,80,80,0.55) !important;
+  border-radius: 4px !important; color: #E0A0A0 !important;
+  animation: fadeUp 0.4s ease both !important;
 }
 
-/* ── DIVIDER ── */
 hr { border-color: var(--border) !important; opacity: 0.4 !important; }
-
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--navy); }
-::-webkit-scrollbar-thumb { background: var(--goldD); border-radius: 2px; }
 </style>
 """, unsafe_allow_html=True)
 
