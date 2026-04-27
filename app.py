@@ -15,7 +15,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER
 st.set_page_config(page_title="Talently", page_icon="◈", layout="centered")
 
 # ── SESSION STATE ─────────────────────────────────────────────────────────────
-for k, v in [("step", 0), ("data", {}), ("cv_text", None), ("lang", None)]:
+for k, v in [("step", 0), ("data", {}), ("cv_text", None), ("assessment_text", None), ("lang", None)]:
     if k not in st.session_state:
         st.session_state[k] = v
 
@@ -38,21 +38,26 @@ T = {
         "step1_label": "الخطوة الأولى — البيانات الشخصية",
         "step2_label": "الخطوة الثانية — التقييم المهني",
         "full_name": "الاسم الكامل",
-        "email": "البريد الإلكتروني",
-        "phone": "رقم الهاتف",
-        "city": "المدينة",
-        "city_opts": ["اختر", "القاهرة", "الإسكندرية", "الجيزة", "المنصورة", "أسيوط", "طنطا", "أخرى"],
+        "age": "السن",
+        "age_opts": ["اختر"] + [str(i) for i in range(18, 56)],
+        "address": "العنوان التفصيلي",
+        "phone": "رقم الموبايل",
         "edu": "المؤهل الدراسي",
         "edu_opts": ["اختر", "طالب جامعي", "بكالوريوس", "دبلوم", "ماجستير", "ثانوية عامة"],
         "major": "التخصص / المجال الدراسي",
         "years_exp": "سنوات الخبرة في المبيعات",
         "years_opts": ["اختر", "لا يوجد (مبتدئ)", "أقل من سنة", "1 – 2 سنة", "3 – 5 سنوات", "أكثر من 5 سنوات"],
-        "prev_job": "المسمى الوظيفي السابق (اختياري)",
+        "exp_section": "الخبرة العملية السابقة",
+        "company_name": "اسم الشركة",
+        "job_title": "المسمى الوظيفي",
+        "duration": "مدة العمل",
+        "duration_opts": ["اختر", "أقل من 6 شهور", "6 – 12 شهر", "1 – 2 سنة", "2 – 4 سنوات", "أكثر من 4 سنوات"],
+        "add_exp": "➕ إضافة شركة أخرى",
         "next": "التالي ←",
         "back": "→ رجوع",
         "generate": "إنشاء السيرة الذاتية ✦",
         "err_required": "⚠️ من فضلك أكمل جميع الحقول المطلوبة",
-        "err_city": "⚠️ من فضلك اختر المدينة",
+        "err_age": "⚠️ من فضلك اختر السن",
         "err_edu": "⚠️ من فضلك اختر المؤهل الدراسي",
         "err_exp": "⚠️ من فضلك اختر سنوات الخبرة",
         "err_open": "⚠️ من فضلك أجب على السؤال المفتوح",
@@ -77,36 +82,31 @@ T = {
             "أحلل الموقف لتحسين أسلوبي في المستقبل",
             "أطلب مساعدة زميل أكثر خبرة",
         ],
-        "q_learn": "كيف تكتسب مهارات جديدة في بيئة العمل؟",
-        "q_learn_opts": [
-            "التجربة العملية المباشرة والخطأ والتعلم",
-            "مشاهدة كيف يعمل الزملاء الناجحون",
-            "البحث الذاتي والتدريب عبر الإنترنت",
-            "الحصول على تغذية راجعة مستمرة من المدير",
+        "q_ambition": "أين تريد أن تكون مهنياً بعد 3 سنوات؟",
+        "q_ambition_opts": [
+            "مدير مبيعات أو team leader",
+            "خبير في مجال تخصصي محدد",
+            "رائد أعمال أو عمل مستقل",
+            "الاستمرار في التطور كموظف محترف",
         ],
-        "q_training": "إذا طُلب منك الالتزام بتدريب مكثف لمدة أسبوعين قبل البدء — ما موقفك؟",
-        "q_training_opts": [
-            "موافق تماماً، التدريب يُعدّني للنجاح",
-            "موافق شرط أن يكون التدريب عملياً وليس نظرياً",
-            "أفضل البدء فوراً والتعلم أثناء العمل",
-            "أحتاج أعرف تفاصيل التدريب قبل الموافقة",
-        ],
-        "q_scenario": "في أول أسبوع لك، طُلب منك إقناع 10 عملاء يومياً بالهاتف. كيف ستبدأ؟",
-        "q_scenario_opts": [
-            "أدرس المنتج جيداً أولاً ثم أبدأ بالاتصال",
-            "أبدأ فوراً وأتعلم من كل محادثة",
-            "أطلب الاستماع لزميل ناجح قبل أن أبدأ",
-            "أضع سكريبت واضح لنفسي وألتزم به",
+        "q_work_env": "ما بيئة العمل التي تناسبك أكثر؟",
+        "q_work_env_opts": [
+            "بيئة تنافسية بأهداف عالية وضغط مستمر",
+            "بيئة تعاونية وفريق عمل متماسك",
+            "بيئة مرنة تتيح الإبداع والمبادرة",
+            "بيئة منظمة بإجراءات واضحة",
         ],
         "open_q": "عرّف عن نفسك في 3 جمل (نقاط قوتك وطموحك)",
         "generating": "جاري إعداد سيرتك الذاتية...",
-        "success": "تم إعداد سيرتك الذاتية بنجاح",
-        "preview_label": "معاينة السيرة الذاتية",
-        "download_btn": "تحميل السيرة الذاتية — PDF",
+        "success": "تم إعداد ملفك بنجاح",
+        "preview_cv": "معاينة السيرة الذاتية",
+        "preview_report": "معاينة تقرير التقييم",
+        "download_cv": "⬇ تحميل السيرة الذاتية — PDF",
+        "download_report": "⬇ تحميل تقرير التقييم — PDF",
         "restart_btn": "بدء تقييم جديد",
         "footer_contact": "سيتم التواصل معك قريباً",
-        "lang_label": "اختر لغتك",
-        "choose_lang": "اختر اللغة للمتابعة",
+        "exp_label": "الشركة",
+        "no_prev_exp": "لا توجد خبرة سابقة",
     },
     "en": {
         "dir": "ltr",
@@ -125,21 +125,26 @@ T = {
         "step1_label": "Step One — Personal Information",
         "step2_label": "Step Two — Professional Assessment",
         "full_name": "Full Name",
-        "email": "Email Address",
-        "phone": "Phone Number",
-        "city": "City",
-        "city_opts": ["Select", "Cairo", "Alexandria", "Giza", "Mansoura", "Asyut", "Tanta", "Other"],
+        "age": "Age",
+        "age_opts": ["Select"] + [str(i) for i in range(18, 56)],
+        "address": "Full Address",
+        "phone": "Mobile Number",
         "edu": "Education Level",
         "edu_opts": ["Select", "University Student", "Bachelor's Degree", "Diploma", "Master's Degree", "High School"],
         "major": "Major / Field of Study",
         "years_exp": "Years of Sales Experience",
         "years_opts": ["Select", "No Experience (Beginner)", "Less than 1 year", "1 – 2 years", "3 – 5 years", "More than 5 years"],
-        "prev_job": "Previous Job Title (Optional)",
+        "exp_section": "Previous Work Experience",
+        "company_name": "Company Name",
+        "job_title": "Job Title",
+        "duration": "Duration",
+        "duration_opts": ["Select", "Less than 6 months", "6 – 12 months", "1 – 2 years", "2 – 4 years", "More than 4 years"],
+        "add_exp": "➕ Add Another Company",
         "next": "Next →",
         "back": "← Back",
         "generate": "Generate CV ✦",
         "err_required": "⚠️ Please complete all required fields",
-        "err_city": "⚠️ Please select your city",
+        "err_age": "⚠️ Please select your age",
         "err_edu": "⚠️ Please select your education level",
         "err_exp": "⚠️ Please select years of experience",
         "err_open": "⚠️ Please answer the open question",
@@ -164,36 +169,31 @@ T = {
             "I analyze the situation to improve my approach",
             "I ask a more experienced colleague for help",
         ],
-        "q_learn": "How do you acquire new skills at work?",
-        "q_learn_opts": [
-            "Hands-on experience, trial and error",
-            "Watching how successful colleagues work",
-            "Self-research and online training",
-            "Getting continuous feedback from management",
+        "q_ambition": "Where do you want to be professionally in 3 years?",
+        "q_ambition_opts": [
+            "Sales manager or team leader",
+            "Expert in a specific specialized field",
+            "Entrepreneur or freelancer",
+            "Continue growing as a professional employee",
         ],
-        "q_training": "If required to commit to 2 weeks of intensive training before starting — your stance?",
-        "q_training_opts": [
-            "Fully agree — training prepares me for success",
-            "Agree, as long as training is practical not theoretical",
-            "I prefer starting immediately and learning on the job",
-            "I need to know training details before agreeing",
-        ],
-        "q_scenario": "In your first week, you're asked to call 10 clients daily by phone. How do you start?",
-        "q_scenario_opts": [
-            "Study the product well first, then start calling",
-            "Start immediately and learn from each conversation",
-            "Ask to listen to a successful colleague first",
-            "Prepare a clear personal script and stick to it",
+        "q_work_env": "What work environment suits you most?",
+        "q_work_env_opts": [
+            "Competitive environment with high targets and pressure",
+            "Collaborative team-oriented environment",
+            "Flexible environment that allows creativity and initiative",
+            "Structured environment with clear procedures",
         ],
         "open_q": "Describe yourself in 3 sentences (your strengths and ambitions)",
-        "generating": "Preparing your CV...",
-        "success": "Your CV has been prepared successfully",
-        "preview_label": "CV Preview",
-        "download_btn": "Download CV — PDF",
+        "generating": "Preparing your files...",
+        "success": "Your files have been prepared successfully",
+        "preview_cv": "CV Preview",
+        "preview_report": "Assessment Report Preview",
+        "download_cv": "⬇ Download CV — PDF",
+        "download_report": "⬇ Download Assessment Report — PDF",
         "restart_btn": "Start New Assessment",
         "footer_contact": "We will contact you soon",
-        "lang_label": "Choose Your Language",
-        "choose_lang": "Choose your language to continue",
+        "exp_label": "Company",
+        "no_prev_exp": "No previous experience",
     }
 }
 
@@ -248,19 +248,12 @@ st.markdown("""
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--goldD), var(--gold)); border-radius: 2px; }
 
-/* ═══ KEYFRAMES ═══ */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes shimmer {
-  0%   { left: -100%; }
-  100% { left: 220%; }
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes shimmer { 0% { left: -100%; } 100% { left: 220%; } }
 @keyframes pulseGold {
   0%,100% { opacity: 0.4; transform: scale(1); }
   50%     { opacity: 1;   transform: scale(1.15); }
@@ -277,6 +270,10 @@ st.markdown("""
   0%,100% { box-shadow: 0 0 0px 0px rgba(200,164,90,0); }
   50%     { box-shadow: 0 0 28px 4px rgba(200,164,90,0.14); }
 }
+@keyframes textGlow {
+  0%,100% { text-shadow: 0 0 20px rgba(200,164,90,0.2); }
+  50%     { text-shadow: 0 0 40px rgba(200,164,90,0.5), 0 0 80px rgba(200,164,90,0.2); }
+}
 @keyframes orb1 {
   0%,100% { transform: translate(0,0) scale(1); opacity: 0.5; }
   33%     { transform: translate(30px,-20px) scale(1.1); opacity: 0.8; }
@@ -286,57 +283,9 @@ st.markdown("""
   0%,100% { transform: translate(0,0) scale(1); opacity: 0.4; }
   50%     { transform: translate(-25px,20px) scale(1.12); opacity: 0.7; }
 }
-@keyframes orb3 {
-  0%,100% { transform: translate(0,0) scale(1); opacity: 0.3; }
-  40%     { transform: translate(20px,-30px) scale(1.08); opacity: 0.55; }
-  70%     { transform: translate(-15px,10px) scale(0.92); opacity: 0.4; }
-}
-@keyframes floatY {
-  0%,100% { transform: translateY(0px); }
-  50%     { transform: translateY(-8px); }
-}
-@keyframes scanLine {
-  0%   { top: -2px; opacity: 0; }
-  10%  { opacity: 0.6; }
-  90%  { opacity: 0.4; }
-  100% { top: 100%; opacity: 0; }
-}
-@keyframes borderGlow {
-  0%,100% { border-color: rgba(200,164,90,0.12); }
-  50%     { border-color: rgba(200,164,90,0.35); }
-}
-@keyframes particleFloat {
-  0%   { transform: translateY(0px) translateX(0px) scale(1); opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 0.6; }
-  100% { transform: translateY(-120px) translateX(20px) scale(0.3); opacity: 0; }
-}
-@keyframes particleFloat2 {
-  0%   { transform: translateY(0px) translateX(0px) scale(1); opacity: 0; }
-  10%  { opacity: 0.8; }
-  100% { transform: translateY(-90px) translateX(-30px) scale(0.2); opacity: 0; }
-}
-@keyframes starTwinkle {
-  0%,100% { opacity: 0.1; transform: scale(0.8); }
-  50%     { opacity: 0.7; transform: scale(1.3); }
-}
-@keyframes goldRing {
-  0%   { transform: scale(0.8); opacity: 0.6; }
-  100% { transform: scale(2.2); opacity: 0; }
-}
-@keyframes textGlow {
-  0%,100% { text-shadow: 0 0 20px rgba(200,164,90,0.2); }
-  50%     { text-shadow: 0 0 40px rgba(200,164,90,0.5), 0 0 80px rgba(200,164,90,0.2); }
-}
 
-/* ═══ AMBIENT ORBS (decorative background shapes) ═══ */
-.orb-container {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-}
-.orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(80px);
-}
+.orb-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.orb { position: absolute; border-radius: 50%; filter: blur(80px); }
 .orb-1 {
   width: 500px; height: 380px;
   background: radial-gradient(ellipse, rgba(200,164,90,0.14) 0%, transparent 70%);
@@ -349,41 +298,7 @@ st.markdown("""
   bottom: 5%; right: -100px;
   animation: orb2 18s ease-in-out infinite;
 }
-.orb-3 {
-  width: 300px; height: 250px;
-  background: radial-gradient(ellipse, rgba(200,164,90,0.07) 0%, transparent 70%);
-  top: 45%; left: 55%;
-  animation: orb3 22s ease-in-out infinite;
-}
 
-/* Floating particles */
-.particle {
-  position: fixed; pointer-events: none; z-index: 0;
-  width: 3px; height: 3px;
-  background: var(--gold);
-  border-radius: 50%;
-  filter: blur(0.5px);
-  box-shadow: 0 0 6px rgba(200,164,90,0.8);
-}
-.p1 { bottom: 20%; left: 15%; animation: particleFloat  8s ease-in-out 0s infinite; }
-.p2 { bottom: 35%; left: 75%; animation: particleFloat2 11s ease-in-out 1s infinite; }
-.p3 { bottom: 60%; left: 40%; animation: particleFloat  14s ease-in-out 3s infinite; }
-.p4 { bottom: 10%; left: 60%; animation: particleFloat2 9s ease-in-out 5s infinite; }
-.p5 { bottom: 80%; left: 25%; animation: particleFloat  12s ease-in-out 2s infinite; opacity:0.5; }
-
-/* Star dots */
-.star {
-  position: fixed; pointer-events: none; z-index: 0;
-  border-radius: 50%; background: var(--gold2);
-}
-.s1 { width:2px; height:2px; top:12%; left:20%; animation: starTwinkle 4s ease-in-out 0s infinite; }
-.s2 { width:1px; height:1px; top:28%; left:80%; animation: starTwinkle 6s ease-in-out 1s infinite; }
-.s3 { width:2px; height:2px; top:55%; left:92%; animation: starTwinkle 5s ease-in-out 2s infinite; }
-.s4 { width:1px; height:1px; top:70%; left:10%; animation: starTwinkle 7s ease-in-out 0.5s infinite; }
-.s5 { width:2px; height:2px; top:88%; left:50%; animation: starTwinkle 4.5s ease-in-out 3s infinite; }
-.s6 { width:1px; height:1px; top:40%; left:5%;  animation: starTwinkle 5.5s ease-in-out 1.5s infinite; }
-
-/* ═══ BRAND BAR ═══ */
 .brand-bar {
   padding: 32px 0 26px;
   margin-bottom: 60px;
@@ -401,16 +316,13 @@ st.markdown("""
   background: linear-gradient(90deg, var(--gold) 0%, rgba(200,164,90,0.25) 50%, transparent 88%);
   animation: lineGrow 1.2s cubic-bezier(0.4,0,0.2,1) 0.3s both;
 }
-
 .brand-left { display: flex; flex-direction: column; gap: 4px; }
-
 .brand-name {
   font-family: 'Cormorant Garamond', serif;
   font-size: 28px; font-weight: 600;
   color: var(--white); letter-spacing: 10px;
   text-transform: uppercase;
   text-shadow: 0 0 50px rgba(200,164,90,0.35), 0 2px 20px rgba(0,0,0,0.5);
-  animation: fadeIn 0.9s ease both;
 }
 .brand-dot {
   width: 6px; height: 6px;
@@ -425,324 +337,175 @@ st.markdown("""
 .brand-sub-name {
   font-size: 15px; letter-spacing: 3px;
   text-transform: uppercase;
-  color: var(--gold2);
-  font-weight: 500;
-  opacity: 0.92;
+  color: var(--gold2); font-weight: 500; opacity: 0.92;
   font-family: 'Outfit', sans-serif;
-  white-space: nowrap;
-  text-shadow: 0 0 20px rgba(200,164,90,0.45), 0 0 40px rgba(200,164,90,0.2);
-  animation: fadeIn 1.1s ease 0.2s both;
+  text-shadow: 0 0 20px rgba(200,164,90,0.45);
 }
 .brand-tag {
   font-size: 9px; letter-spacing: 4px;
   text-transform: uppercase;
-  color: var(--mid); font-weight: 300;
-  opacity: 0.6;
-  margin-top: 4px;
-  text-align: right;
+  color: var(--mid); font-weight: 300; opacity: 0.6; margin-top: 4px;
 }
 
-/* ═══ HERO ═══ */
 .hero-eyebrow {
   font-size: 8px; letter-spacing: 5px;
   text-transform: uppercase; color: var(--gold);
   margin-bottom: 28px; font-weight: 400;
   display: flex; align-items: center; gap: 14px;
-  opacity: 0;
-  animation: fadeUp 0.7s ease 0.3s both;
+  opacity: 0; animation: fadeUp 0.7s ease 0.3s both;
 }
-.hero-eyebrow::before {
-  content: '◈'; font-size: 11px;
-  animation: pulseGold 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(200,164,90,0.6));
-}
-.hero-eyebrow::after {
-  content: ''; flex: 1; height: 1px;
-  background: linear-gradient(90deg, var(--goldB), transparent);
-}
+.hero-eyebrow::before { content: '◈'; font-size: 11px; animation: pulseGold 3s ease-in-out infinite; }
+.hero-eyebrow::after  { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--goldB), transparent); }
 
 .hero-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 72px; font-weight: 400;
   color: var(--white); line-height: 1.0;
   margin-bottom: 8px; letter-spacing: -1px;
-  opacity: 0;
-  animation: fadeUp 0.85s ease 0.45s both;
+  opacity: 0; animation: fadeUp 0.85s ease 0.45s both;
   text-shadow: 0 4px 40px rgba(0,0,0,0.4);
 }
 .hero-title em   { color: var(--gold); font-style: italic; animation: textGlow 4s ease-in-out infinite; display: inline-block; }
 .hero-title span { display: block; font-size: 56px; }
 
 .hero-sub {
-  font-size: 14px; color: var(--muted);
-  font-weight: 300; line-height: 2.0;
-  margin: 28px 0 52px; max-width: 400px;
-  letter-spacing: 0.3px;
-  opacity: 0;
-  animation: fadeUp 0.85s ease 0.6s both;
+  font-size: 14px; color: var(--muted); font-weight: 300; line-height: 2.0;
+  margin: 28px 0 52px; max-width: 400px; letter-spacing: 0.3px;
+  opacity: 0; animation: fadeUp 0.85s ease 0.6s both;
 }
-.hero-sub strong { color: var(--soft); font-weight: 400; }
 
-/* ═══ STATS GRID ═══ */
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--borderG);
-  border: 1px solid var(--borderG);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 52px;
-  opacity: 0;
-  animation: fadeUp 0.85s ease 0.75s both, glowPulse 5s ease 2s infinite;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--borderG);
+  border: 1px solid var(--borderG); border-radius: 6px;
+  overflow: hidden; margin-bottom: 52px;
+  opacity: 0; animation: fadeUp 0.85s ease 0.75s both, glowPulse 5s ease 2s infinite;
 }
 .stat-cell {
-  background: var(--navy2);
-  padding: 32px 16px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  transition: background 0.4s ease, transform 0.3s ease;
-}
-.stat-cell::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%; width: 55%; height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(200,164,90,0.08), transparent);
-  pointer-events: none;
-}
-.stat-cell::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 50%; transform: translateX(-50%);
-  width: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  transition: width 0.45s ease;
+  background: var(--navy2); padding: 32px 16px;
+  text-align: center; position: relative; overflow: hidden;
+  transition: background 0.4s ease;
 }
 .stat-cell:hover { background: var(--navy3); }
-.stat-cell:hover::before { width: 60%; }
-.stat-cell:hover::after { animation: shimmer 0.7s ease forwards; }
-
 .stat-num {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 24px; font-weight: 600;
-  color: var(--gold); line-height: 1.2;
-  margin-bottom: 9px; letter-spacing: 1px;
+  font-size: 24px; font-weight: 600; color: var(--gold);
+  line-height: 1.2; margin-bottom: 9px; letter-spacing: 1px;
   text-shadow: 0 0 20px rgba(200,164,90,0.4);
 }
-.stat-lbl {
-  font-size: 7px; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--muted); font-weight: 400;
-  line-height: 1.5;
-}
+.stat-lbl { font-size: 7px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 400; line-height: 1.5; }
 
-/* ═══ LANGUAGE SELECTOR ═══ */
-.lang-screen {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 50vh; gap: 32px;
-  animation: fadeUp 0.8s ease both;
-}
-.lang-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 28px; font-weight: 400;
-  color: var(--white); letter-spacing: 3px;
-  text-align: center;
-}
-.lang-sub {
-  font-size: 12px; color: var(--muted);
-  letter-spacing: 3px; text-transform: uppercase;
-  text-align: center;
-}
-.lang-buttons { display: flex; gap: 16px; width: 100%; max-width: 340px; }
-
-/* ═══ SECTION LABEL ═══ */
 .sec-label {
-  font-size: 8.5px; letter-spacing: 4px;
-  text-transform: uppercase; color: var(--gold);
-  margin-bottom: 32px; padding-bottom: 14px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 10px;
-  font-weight: 400;
+  font-size: 8.5px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 32px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; font-weight: 400;
   animation: fadeIn 0.7s ease both;
 }
 .sec-label::before { content: '—'; opacity: 0.4; }
 
-/* ═══ SUCCESS BANNER ═══ */
 .success-banner {
   background: linear-gradient(135deg, rgba(200,164,90,0.11), rgba(200,164,90,0.03));
-  border: 1px solid var(--goldB);
-  border-left: 2px solid var(--gold);
-  padding: 16px 22px;
-  border-radius: 5px;
-  color: var(--gold2);
-  font-size: 13px;
-  letter-spacing: 0.4px;
-  margin-bottom: 32px;
+  border: 1px solid var(--goldB); border-left: 2px solid var(--gold);
+  padding: 16px 22px; border-radius: 5px; color: var(--gold2);
+  font-size: 13px; letter-spacing: 0.4px; margin-bottom: 32px;
   display: flex; align-items: center; gap: 12px;
   animation: fadeUp 0.6s ease both, glowPulse 3s ease 0.8s infinite;
 }
-.success-banner::before {
-  content: '✦'; font-size: 13px; opacity: 0.7;
-  animation: pulseGold 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 5px rgba(200,164,90,0.6));
-}
+.success-banner::before { content: '✦'; font-size: 13px; opacity: 0.7; animation: pulseGold 2s ease-in-out infinite; }
 
-/* ═══ CV BOX ═══ */
 .cv-box {
-  background: var(--navy2);
-  border: 1px solid var(--borderW);
-  border-top: 1px solid var(--borderG);
-  border-radius: 6px;
-  padding: 36px 32px;
-  font-size: 12.5px; line-height: 2.0;
-  color: var(--soft);
-  white-space: pre-wrap;
+  background: var(--navy2); border: 1px solid var(--borderW);
+  border-top: 1px solid var(--borderG); border-radius: 6px;
+  padding: 36px 32px; font-size: 12.5px; line-height: 2.0;
+  color: var(--soft); white-space: pre-wrap;
   font-family: 'Outfit', sans-serif; font-weight: 300;
   margin-bottom: 28px;
   box-shadow: 0 28px 72px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
-  animation: fadeUp 0.7s ease both;
-  position: relative; overflow: hidden;
-  animation: borderGlow 4s ease-in-out infinite;
-}
-.cv-box::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%; width: 55%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(200,164,90,0.6), transparent);
-  animation: shimmer 2s ease 0.5s both;
-}
-/* scan line effect */
-.cv-box::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(200,164,90,0.08), transparent);
-  animation: scanLine 5s linear 1s infinite;
 }
 
-/* ═══ PROGRESS ═══ */
+.exp-card {
+  background: var(--navy2); border: 1px solid var(--borderW);
+  border-left: 2px solid var(--goldB); border-radius: 5px;
+  padding: 14px 18px; margin-bottom: 10px;
+  animation: fadeUp 0.4s ease both;
+}
+.exp-card-title { font-size: 11px; color: var(--gold2); letter-spacing: 1px; font-weight: 500; margin-bottom: 2px; }
+.exp-card-sub   { font-size: 10px; color: var(--soft); }
+
 .stProgress > div > div > div > div {
   background: linear-gradient(90deg, var(--goldD), var(--gold), var(--gold2)) !important;
   border-radius: 2px !important;
-  position: relative; overflow: hidden;
   box-shadow: 0 0 12px rgba(200,164,90,0.35) !important;
 }
-.stProgress > div > div > div > div::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%; width: 55%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  animation: shimmer 1.8s ease-in-out infinite;
-}
-.stProgress > div > div {
-  background: rgba(255,255,255,0.05) !important;
-  border-radius: 2px !important; height: 2px !important;
-}
+.stProgress > div > div { background: rgba(255,255,255,0.05) !important; border-radius: 2px !important; height: 2px !important; }
 
-/* ═══ INPUTS ═══ */
-.stTextInput label, .stTextArea label,
-.stSelectbox label, .stRadio > label {
+.stTextInput label, .stTextArea label, .stSelectbox label, .stRadio > label {
   font-size: 8.5px !important; letter-spacing: 3px !important;
   text-transform: uppercase !important; color: var(--muted) !important;
   font-weight: 400 !important; font-family: 'Outfit', sans-serif !important;
   margin-bottom: 8px !important;
 }
-
 .stTextInput > div > div > input {
-  background: var(--navy2) !important;
-  border: 1px solid var(--borderW) !important;
+  background: var(--navy2) !important; border: 1px solid var(--borderW) !important;
   border-radius: 5px !important; color: var(--white) !important;
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 14px !important; font-weight: 300 !important;
-  padding: 16px 20px !important;
-  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease !important;
-  letter-spacing: 0.3px !important;
+  font-family: 'Outfit', sans-serif !important; font-size: 14px !important;
+  font-weight: 300 !important; padding: 16px 20px !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 .stTextInput > div > div > input:focus {
   border-color: rgba(200,164,90,0.55) !important; background: var(--navy3) !important;
-  box-shadow: 0 0 0 3px rgba(200,164,90,0.09), 0 4px 20px rgba(0,0,0,0.3), 0 0 18px rgba(200,164,90,0.08) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.09) !important;
 }
 .stTextInput > div > div > input::placeholder { color: var(--muted) !important; opacity: 0.4 !important; }
 
 .stTextArea > div > div > textarea {
-  background: var(--navy2) !important;
-  border: 1px solid var(--borderW) !important;
+  background: var(--navy2) !important; border: 1px solid var(--borderW) !important;
   border-radius: 5px !important; color: var(--white) !important;
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 14px !important; font-weight: 300 !important;
-  padding: 16px 20px !important;
-  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease !important;
-  line-height: 1.8 !important;
+  font-family: 'Outfit', sans-serif !important; font-size: 14px !important;
+  font-weight: 300 !important; padding: 16px 20px !important; line-height: 1.8 !important;
 }
 .stTextArea > div > div > textarea:focus {
-  border-color: rgba(200,164,90,0.55) !important; background: var(--navy3) !important;
-  box-shadow: 0 0 0 3px rgba(200,164,90,0.09), 0 0 18px rgba(200,164,90,0.08) !important;
+  border-color: rgba(200,164,90,0.55) !important;
+  box-shadow: 0 0 0 3px rgba(200,164,90,0.09) !important;
 }
 
 .stSelectbox > div > div {
-  background: var(--navy2) !important;
-  border: 1px solid var(--borderW) !important;
-  border-radius: 5px !important; color: var(--white) !important;
-  padding: 4px 0 !important;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+  background: var(--navy2) !important; border: 1px solid var(--borderW) !important;
+  border-radius: 5px !important; color: var(--white) !important; padding: 4px 0 !important;
 }
-.stSelectbox > div > div:focus-within {
-  border-color: rgba(200,164,90,0.55) !important;
-  box-shadow: 0 0 0 3px rgba(200,164,90,0.09), 0 0 18px rgba(200,164,90,0.08) !important;
-}
+.stSelectbox > div > div:focus-within { border-color: rgba(200,164,90,0.55) !important; }
 .stSelectbox > div > div > div { color: var(--white) !important; font-family: 'Outfit', sans-serif !important; font-weight: 300 !important; }
 .stSelectbox svg { fill: var(--muted) !important; }
 
-/* RADIO */
 .stRadio > div { gap: 9px !important; flex-direction: column !important; }
 .stRadio > div > label {
-  background: var(--navy2) !important;
-  border: 1px solid var(--borderW) !important;
+  background: var(--navy2) !important; border: 1px solid var(--borderW) !important;
   border-radius: 5px !important; padding: 15px 20px !important;
   color: var(--soft) !important; font-size: 13.5px !important;
   font-family: 'Outfit', sans-serif !important; font-weight: 300 !important;
-  transition: border-color 0.28s ease, background 0.28s ease, transform 0.28s ease, color 0.28s ease, box-shadow 0.28s ease !important;
-  cursor: pointer !important; letter-spacing: 0.2px !important;
-  position: relative !important; overflow: hidden !important;
+  transition: border-color 0.28s ease, background 0.28s ease, transform 0.28s ease !important;
+  cursor: pointer !important;
 }
 .stRadio > div > label:hover {
   border-color: var(--goldB) !important; color: var(--white) !important;
   background: var(--navy3) !important; transform: translateX(6px) !important;
-  box-shadow: -3px 0 0 0 var(--gold), 0 4px 20px rgba(0,0,0,0.25) !important;
+  box-shadow: -3px 0 0 0 var(--gold) !important;
 }
-[data-baseweb="radio"] input:checked + div { border-color: var(--gold) !important; }
 
-/* BUTTONS */
 .stButton > button {
-  background: transparent !important;
-  border: 1px solid var(--goldB) !important;
+  background: transparent !important; border: 1px solid var(--goldB) !important;
   color: var(--gold) !important; border-radius: 5px !important;
-  font-family: 'Outfit', sans-serif !important;
-  font-size: 8.5px !important; font-weight: 500 !important;
-  letter-spacing: 4px !important; text-transform: uppercase !important;
-  padding: 19px 38px !important;
+  font-family: 'Outfit', sans-serif !important; font-size: 8.5px !important;
+  font-weight: 500 !important; letter-spacing: 4px !important;
+  text-transform: uppercase !important; padding: 19px 38px !important;
   transition: color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
   position: relative !important; overflow: hidden !important;
 }
-.stButton > button::before {
-  content: '' !important; position: absolute !important; inset: 0 !important;
-  background: linear-gradient(135deg, var(--gold) 0%, var(--goldD) 100%) !important;
-  opacity: 0 !important; transition: opacity 0.3s ease !important;
-}
-.stButton > button::after {
-  content: '' !important; position: absolute !important;
-  top: 0; left: -100%; width: 55%; height: 100% !important;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.12), transparent) !important;
-}
 .stButton > button:hover {
   color: var(--ink) !important; border-color: var(--gold) !important;
-  transform: translateY(-3px) !important;
-  box-shadow: 0 14px 36px rgba(200,164,90,0.22), 0 4px 12px rgba(0,0,0,0.28), 0 0 0 1px rgba(200,164,90,0.2) !important;
+  background: var(--gold) !important; transform: translateY(-3px) !important;
+  box-shadow: 0 14px 36px rgba(200,164,90,0.22) !important;
 }
-.stButton > button:hover::before { opacity: 1 !important; }
-.stButton > button:hover::after  { animation: shimmer 0.55s ease forwards !important; }
-.stButton > button span { position: relative; z-index: 1; }
 
 .stDownloadButton > button {
   background: linear-gradient(135deg, var(--gold) 0%, var(--goldD) 100%) !important;
@@ -752,55 +515,33 @@ st.markdown("""
   letter-spacing: 4px !important; text-transform: uppercase !important;
   padding: 19px 38px !important;
   transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-  position: relative !important; overflow: hidden !important;
   box-shadow: 0 8px 28px rgba(200,164,90,0.25) !important;
 }
-.stDownloadButton > button::after {
-  content: '' !important; position: absolute !important;
-  top: 0; left: -100%; width: 55%; height: 100% !important;
-  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent) !important;
-}
 .stDownloadButton > button:hover {
-  background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 100%) !important;
-  box-shadow: 0 18px 44px rgba(200,164,90,0.32), 0 4px 14px rgba(0,0,0,0.28) !important;
   transform: translateY(-3px) !important;
+  box-shadow: 0 18px 44px rgba(200,164,90,0.32) !important;
 }
-.stDownloadButton > button:hover::after { animation: shimmer 0.55s ease forwards !important; }
 
-/* SPINNER */
 .stSpinner > div { border-top-color: var(--gold) !important; }
 
-/* FORM CONTAINER */
 [data-testid="stForm"] {
-  background: var(--navy2) !important;
-  border: 1px solid var(--borderW) !important;
-  border-top: 1px solid var(--borderG) !important;
-  border-radius: 6px !important; padding: 36px 32px !important;
+  background: var(--navy2) !important; border: 1px solid var(--borderW) !important;
+  border-top: 1px solid var(--borderG) !important; border-radius: 6px !important;
+  padding: 36px 32px !important;
   box-shadow: 0 28px 72px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04) !important;
   animation: fadeUp 0.75s ease both !important;
-  position: relative !important; overflow: hidden !important;
-}
-[data-testid="stForm"]::before {
-  content: '' !important; position: absolute !important;
-  top: 0; left: -100%; width: 55%; height: 1px !important;
-  background: linear-gradient(90deg, transparent, rgba(200,164,90,0.5), transparent) !important;
-  animation: shimmer 1.5s ease 0.3s both !important;
 }
 
-/* ERROR */
 .stAlert {
-  background: rgba(160,50,50,0.07) !important;
-  border: 1px solid rgba(200,80,80,0.2) !important;
-  border-left: 2px solid rgba(200,80,80,0.55) !important;
-  border-radius: 5px !important; color: #E0A0A0 !important;
-  animation: fadeUp 0.4s ease both !important;
+  background: rgba(160,50,50,0.07) !important; border: 1px solid rgba(200,80,80,0.2) !important;
+  border-left: 2px solid rgba(200,80,80,0.55) !important; border-radius: 5px !important;
+  color: #E0A0A0 !important;
 }
 
 hr { border-color: var(--border) !important; opacity: 0.35 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── AMBIENT ORBS ──────────────────────────────────────────────────────────────
 st.markdown('<div class="orb-container"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>', unsafe_allow_html=True)
 
 # ── GROQ ──────────────────────────────────────────────────────────────────────
@@ -812,7 +553,7 @@ def ask_ai(prompt):
             url="https://api.groq.com/openai/v1/chat/completions",
             headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
             json={"model": "llama-3.3-70b-versatile", "messages": [{"role": "user", "content": prompt}]},
-            timeout=45
+            timeout=60
         )
         result = response.json()
         if "choices" in result:
@@ -828,9 +569,9 @@ def ask_ai(prompt):
 def save_to_csv(data):
     filename = "applicants.csv"
     fieldnames = [
-        "timestamp","lang","name","email","phone","city","education","major",
-        "years_exp","prev_job","q_motivation","q_pressure","q_rejection",
-        "q_learn","q_training","q_scenario","open_q"
+        "timestamp","lang","name","age","address","phone","education","major",
+        "years_exp","companies","q_motivation","q_pressure","q_rejection",
+        "q_ambition","q_work_env","open_q"
     ]
     file_exists = os.path.isfile(filename)
     with open(filename, "a", newline="", encoding="utf-8") as f:
@@ -839,130 +580,261 @@ def save_to_csv(data):
             writer.writeheader()
         row = {k: data.get(k, "") for k in fieldnames}
         row["timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # flatten companies list
+        companies_str = " | ".join([
+            f"{c.get('company','')} / {c.get('title','')} / {c.get('duration','')}"
+            for c in data.get("companies", [])
+        ])
+        row["companies"] = companies_str
         writer.writerow(row)
 
-# ── PDF (ATS-Clean) ───────────────────────────────────────────────────────────
-def generate_pdf_ats(cv_text, data):
-    """Pure ATS-optimized PDF — plain text, no images, no tables, no special chars."""
+# ── PDF: CLEAN CV ─────────────────────────────────────────────────────────────
+def generate_cv_pdf(cv_text, data):
     buffer = BytesIO()
+
+    INK   = colors.HexColor("#111111")
+    DARK  = colors.HexColor("#222222")
+    SOFT  = colors.HexColor("#666666")
+    GOLD  = colors.HexColor("#B8933F")
+    NAVY  = colors.HexColor("#0F1B35")
+    GRULE = colors.HexColor("#E8E8E8")
+
+    def sty(name, **kw):
+        return ParagraphStyle(name, **kw)
+
+    NAME_S  = sty("NM", fontName="Helvetica-Bold",   fontSize=22, textColor=NAVY,  leading=26, alignment=TA_CENTER, spaceAfter=3)
+    ROLE_S  = sty("RL", fontName="Helvetica",         fontSize=10, textColor=GOLD,  leading=14, alignment=TA_CENTER, spaceAfter=2)
+    CONT_S  = sty("CT", fontName="Helvetica",         fontSize=8.5,textColor=SOFT,  leading=13, alignment=TA_CENTER, spaceAfter=1)
+    SECH_S  = sty("SH", fontName="Helvetica-Bold",   fontSize=9,  textColor=NAVY,  leading=13, spaceBefore=14, spaceAfter=5, letterSpacing=2)
+    BODY_S  = sty("BD", fontName="Helvetica",         fontSize=9.5,textColor=DARK,  leading=15, spaceAfter=4)
+    BULL_S  = sty("BL", fontName="Helvetica",         fontSize=9,  textColor=DARK,  leading=14, leftIndent=12, firstLineIndent=-8, spaceAfter=3)
+    CO_NM_S = sty("CN", fontName="Helvetica-Bold",   fontSize=10, textColor=INK,   leading=14, spaceAfter=1)
+    CO_TL_S = sty("CL", fontName="Helvetica-Bold",   fontSize=9,  textColor=GOLD,  leading=13, spaceAfter=1)
+    CO_DT_S = sty("CD", fontName="Helvetica",         fontSize=8,  textColor=SOFT,  leading=12, spaceAfter=6)
+    FOOT_S  = sty("FT", fontName="Helvetica",         fontSize=7,  textColor=colors.HexColor("#AAAAAA"), leading=10, alignment=TA_CENTER)
+
     doc = SimpleDocTemplate(
         buffer, pagesize=A4,
-        rightMargin=22*mm, leftMargin=22*mm,
-        topMargin=18*mm, bottomMargin=18*mm
+        leftMargin=20*mm, rightMargin=20*mm,
+        topMargin=14*mm, bottomMargin=12*mm,
     )
-
-    BLACK  = colors.HexColor("#0D0D0D")
-    DGRAY  = colors.HexColor("#1A1A1A")
-    MGRAY  = colors.HexColor("#444444")
-    LGRAY  = colors.HexColor("#666666")
-    RULE   = colors.HexColor("#CCCCCC")
-
-    name_s    = ParagraphStyle("N",  fontName="Helvetica-Bold", fontSize=18, textColor=BLACK, alignment=TA_CENTER, spaceAfter=3, leading=22)
-    contact_s = ParagraphStyle("C",  fontName="Helvetica",      fontSize=9,  textColor=LGRAY,  alignment=TA_CENTER, spaceAfter=10, leading=13)
-    sec_s     = ParagraphStyle("S",  fontName="Helvetica-Bold", fontSize=10, textColor=BLACK, spaceAfter=4, spaceBefore=14, leading=14)
-    body_s    = ParagraphStyle("B",  fontName="Helvetica",      fontSize=10, textColor=DGRAY, spaceAfter=4, leading=16)
-    bullet_s  = ParagraphStyle("BU", fontName="Helvetica",      fontSize=10, textColor=DGRAY, spaceAfter=3, leading=15, leftIndent=14, firstLineIndent=-8)
-    assess_s  = ParagraphStyle("A",  fontName="Helvetica",      fontSize=9,  textColor=MGRAY, spaceAfter=3, leading=14, leftIndent=12)
-    score_s   = ParagraphStyle("SC", fontName="Helvetica-Bold", fontSize=11, textColor=BLACK, spaceAfter=6, leading=16)
-    footer_s  = ParagraphStyle("F",  fontName="Helvetica",      fontSize=7.5,textColor=LGRAY, alignment=TA_CENTER, leading=11)
-
     story = []
-    lines = cv_text.strip().split("\n")
 
+    # Parse cv_text sections
+    lines = cv_text.strip().split("\n")
     current_section = None
-    name_done = False
-    contact_done = False
-    assessment_lines = []
-    score_line = ""
-    sections_data = {}
-    current_key = None
+    parsed = {
+        "summary": [],
+        "competencies": [],
+        "education": [],
+        "languages": [],
+        "experience_raw": [],
+    }
 
     for line in lines:
         line = line.strip()
         if not line or line == "---": continue
         low = line.lower()
 
-        # Name (all caps line, not a section header keyword)
-        if not name_done and line.isupper() and len(line) > 3 and not any(k in low for k in ["assessment","curriculum","summary","competencies","education","attributes","languages"]):
-            story.append(Paragraph(line, name_s))
-            name_done = True
-            continue
+        if "professional summary" in low:      current_section = "summary";        continue
+        elif "work experience" in low:          current_section = "experience_raw"; continue
+        elif "core competencies" in low:        current_section = "competencies";   continue
+        elif "education" in low and len(line)<20: current_section = "education";   continue
+        elif "languages" in low and len(line)<15: current_section = "languages";   continue
+        elif "assessment" in low:               current_section = None;             continue
+        elif "curriculum vitae" in low:         current_section = None;             continue
 
-        # Contact line
-        if not contact_done and "|" in line and ("@" in line or any(c.isdigit() for c in line)):
-            story.append(Paragraph(line.replace("|", "  |  "), contact_s))
-            story.append(HRFlowable(width="100%", thickness=0.8, color=RULE, spaceAfter=8, spaceBefore=2))
-            contact_done = True
-            continue
+        if current_section and current_section in parsed:
+            parsed[current_section].append(line.lstrip("-•▸– ").strip())
 
-        # Score
-        if "score:" in low:
-            score_line = line
-            continue
-
-        # Section headers
-        if "assessment report" in low:
-            current_section = "assessment"
-            continue
-        elif "professional summary" in low:
-            if assessment_lines or score_line:
-                story.append(Paragraph("ASSESSMENT", sec_s))
-                story.append(HRFlowable(width="100%", thickness=0.5, color=RULE, spaceAfter=5))
-                if score_line:
-                    story.append(Paragraph(score_line, score_s))
-                for al in assessment_lines:
-                    story.append(Paragraph(f"- {al}", assess_s))
-                story.append(Spacer(1, 5*mm))
-            current_section = "summary"
-            story.append(Paragraph("PROFESSIONAL SUMMARY", sec_s))
-            story.append(HRFlowable(width="100%", thickness=0.5, color=RULE, spaceAfter=5))
-            continue
-        elif "core competencies" in low:
-            current_section = "competencies"
-            story.append(Paragraph("CORE COMPETENCIES", sec_s))
-            story.append(HRFlowable(width="100%", thickness=0.5, color=RULE, spaceAfter=5))
-            continue
-        elif "education" in low and len(line) < 20:
-            current_section = "education"
-            story.append(Paragraph("EDUCATION", sec_s))
-            story.append(HRFlowable(width="100%", thickness=0.5, color=RULE, spaceAfter=5))
-            continue
-        elif "key attributes" in low:
-            current_section = "attributes"
-            story.append(Paragraph("KEY ATTRIBUTES", sec_s))
-            story.append(HRFlowable(width="100%", thickness=0.5, color=RULE, spaceAfter=5))
-            continue
-        elif "languages" in low and len(line) < 15:
-            current_section = "languages"
-            story.append(Paragraph("LANGUAGES", sec_s))
-            story.append(HRFlowable(width="100%", thickness=0.5, color=RULE, spaceAfter=5))
-            continue
-        elif "curriculum vitae" in low:
-            current_section = None
-            continue
-
-        # Content
-        if current_section == "assessment":
-            clean = line.lstrip("-•– ").strip()
-            if clean:
-                assessment_lines.append(clean)
-        elif current_section == "summary":
-            if line:
-                story.append(Paragraph(line, body_s))
-        elif current_section in ("competencies", "attributes", "languages"):
-            clean = line.lstrip("-•– ").strip()
-            if clean:
-                story.append(Paragraph(f"- {clean}", bullet_s))
-        elif current_section == "education":
-            if line:
-                story.append(Paragraph(line, body_s))
-
-    story.append(Spacer(1, 10*mm))
-    story.append(HRFlowable(width="100%", thickness=0.5, color=RULE))
-    story.append(Spacer(1, 2*mm))
+    # ── NAME & CONTACT
+    story.append(Paragraph(data["name"].upper(), NAME_S))
+    story.append(Paragraph("Sales Professional  |  Egypt", ROLE_S))
     story.append(Paragraph(
-        f"Generated: {datetime.now().strftime('%B %d, %Y')}  |  ATS-Optimized  |  Talently - Deals Outsourcing.com",
-        footer_s
+        f"{data['phone']}   |   {data.get('email','')}   |   {data['address']}   |   Age: {data['age']}",
+        CONT_S
+    ))
+    story.append(Spacer(1, 2*mm))
+    story.append(HRFlowable(width="100%", thickness=2,   color=GOLD,  spaceAfter=0))
+    story.append(HRFlowable(width="100%", thickness=0.4, color=GRULE, spaceAfter=0))
+
+    # ── PROFESSIONAL SUMMARY
+    story.append(Paragraph("PROFESSIONAL SUMMARY", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+    for line in parsed["summary"]:
+        if line:
+            story.append(Paragraph(line, BODY_S))
+
+    # ── WORK EXPERIENCE
+    story.append(Paragraph("WORK EXPERIENCE", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+
+    companies = data.get("companies", [])
+    if companies:
+        for i, exp in enumerate(companies):
+            if exp.get("company") and exp["company"] != t.get("no_prev_exp",""):
+                story.append(Paragraph(exp.get("company", ""), CO_NM_S))
+                story.append(Paragraph(exp.get("title", ""), CO_TL_S))
+                story.append(Paragraph(f"Duration: {exp.get('duration','')}", CO_DT_S))
+                if i < len(companies) - 1:
+                    story.append(HRFlowable(width="100%", thickness=0.3, color=GRULE, spaceBefore=2, spaceAfter=4))
+    else:
+        story.append(Paragraph("No previous experience — Entry Level Candidate", BODY_S))
+
+    # ── CORE COMPETENCIES
+    story.append(Paragraph("CORE COMPETENCIES", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+    for comp in parsed["competencies"]:
+        if comp:
+            story.append(Paragraph(f"  ▸   {comp}", BULL_S))
+
+    # ── EDUCATION
+    story.append(Paragraph("EDUCATION", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+    for line in parsed["education"]:
+        if line:
+            story.append(Paragraph(line, BODY_S))
+
+    # ── LANGUAGES
+    story.append(Paragraph("LANGUAGES", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+    for line in parsed["languages"]:
+        if line:
+            story.append(Paragraph(f"  ▸   {line}", BULL_S))
+
+    # ── FOOTER
+    story.append(Spacer(1, 4*mm))
+    story.append(HRFlowable(width="100%", thickness=0.4, color=GRULE, spaceAfter=3))
+    story.append(Paragraph(
+        f"Generated {datetime.now().strftime('%B %d, %Y')}   |   ATS-Optimized CV   |   Talently — Deals Outsourcing.com",
+        FOOT_S
+    ))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
+
+# ── PDF: ASSESSMENT REPORT ────────────────────────────────────────────────────
+def generate_report_pdf(assessment_text, data):
+    buffer = BytesIO()
+
+    INK   = colors.HexColor("#111111")
+    DARK  = colors.HexColor("#222222")
+    SOFT  = colors.HexColor("#666666")
+    GOLD  = colors.HexColor("#B8933F")
+    NAVY  = colors.HexColor("#0F1B35")
+    GRULE = colors.HexColor("#E8E8E8")
+
+    def sty(name, **kw):
+        return ParagraphStyle(name, **kw)
+
+    TITLE_S = sty("TL", fontName="Helvetica-Bold",   fontSize=18, textColor=NAVY,  leading=22, alignment=TA_CENTER, spaceAfter=4)
+    SUB_S   = sty("SB", fontName="Helvetica",         fontSize=9,  textColor=SOFT,  leading=13, alignment=TA_CENTER, spaceAfter=2)
+    SECH_S  = sty("SH", fontName="Helvetica-Bold",   fontSize=9,  textColor=NAVY,  leading=13, spaceBefore=16, spaceAfter=6, letterSpacing=2)
+    BODY_S  = sty("BD", fontName="Helvetica",         fontSize=9.5,textColor=DARK,  leading=15, spaceAfter=4)
+    BULL_S  = sty("BL", fontName="Helvetica",         fontSize=9,  textColor=DARK,  leading=14, leftIndent=12, firstLineIndent=-8, spaceAfter=3)
+    SCORE_S = sty("SC", fontName="Helvetica-Bold",   fontSize=28, textColor=GOLD,  leading=32, alignment=TA_CENTER, spaceAfter=2)
+    REC_S   = sty("RC", fontName="Helvetica-Bold",   fontSize=10, textColor=NAVY,  leading=14, alignment=TA_CENTER, spaceAfter=4)
+    LBL_S   = sty("LB", fontName="Helvetica-Bold",   fontSize=8,  textColor=SOFT,  leading=12, spaceAfter=1)
+    VAL_S   = sty("VL", fontName="Helvetica",         fontSize=9.5,textColor=DARK,  leading=14, spaceAfter=6)
+    FOOT_S  = sty("FT", fontName="Helvetica",         fontSize=7,  textColor=colors.HexColor("#AAAAAA"), leading=10, alignment=TA_CENTER)
+
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        leftMargin=20*mm, rightMargin=20*mm,
+        topMargin=14*mm, bottomMargin=12*mm,
+    )
+    story = []
+
+    # ── HEADER
+    story.append(Paragraph("CANDIDATE ASSESSMENT REPORT", TITLE_S))
+    story.append(Paragraph(f"Talently — Deals Outsourcing.com   |   {datetime.now().strftime('%B %d, %Y')}", SUB_S))
+    story.append(Spacer(1, 2*mm))
+    story.append(HRFlowable(width="100%", thickness=2,   color=GOLD,  spaceAfter=0))
+    story.append(HRFlowable(width="100%", thickness=0.4, color=GRULE, spaceAfter=0))
+
+    # ── CANDIDATE INFO
+    story.append(Paragraph("CANDIDATE INFORMATION", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+    info_pairs = [
+        ("Full Name",   data.get("name", "")),
+        ("Age",         data.get("age", "")),
+        ("Address",     data.get("address", "")),
+        ("Phone",       data.get("phone", "")),
+        ("Education",   data.get("education", "") + " — " + data.get("major", "")),
+        ("Experience",  data.get("years_exp", "")),
+    ]
+    for lbl, val in info_pairs:
+        if val.strip(" —"):
+            story.append(Paragraph(lbl, LBL_S))
+            story.append(Paragraph(val, VAL_S))
+
+    # ── SCORE (parsed from assessment_text)
+    lines = assessment_text.strip().split("\n")
+    score_line = ""
+    findings   = []
+    rec_line   = ""
+    fit_line   = ""
+    answers_section = False
+    answers    = []
+
+    for line in lines:
+        line = line.strip()
+        if not line: continue
+        low = line.lower()
+        if "score:" in low:
+            score_line = line.split(":",1)[1].strip()
+        elif "recommendation:" in low:
+            rec_line = line.split(":",1)[1].strip()
+        elif "best fit" in low or "fit role" in low:
+            fit_line = line.split(":",1)[1].strip() if ":" in line else line
+        elif "candidate answers" in low or "assessment answers" in low:
+            answers_section = True
+        elif answers_section and line.startswith("-"):
+            answers.append(line.lstrip("-• ").strip())
+        elif line.startswith("-") and not answers_section:
+            findings.append(line.lstrip("-•▸ ").strip())
+
+    story.append(Paragraph("ASSESSMENT SCORE", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+    if score_line:
+        story.append(Paragraph(score_line, SCORE_S))
+    if fit_line:
+        story.append(Paragraph(f"Best Fit Role: {fit_line}", REC_S))
+    if rec_line:
+        story.append(Paragraph(rec_line, sty("RC2", fontName="Helvetica-Bold", fontSize=9, textColor=GOLD, leading=13, alignment=TA_CENTER, spaceAfter=4)))
+
+    # ── KEY FINDINGS
+    if findings:
+        story.append(Paragraph("KEY FINDINGS", SECH_S))
+        story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+        for f in findings:
+            if f:
+                story.append(Paragraph(f"  ▸   {f}", BULL_S))
+
+    # ── CANDIDATE ANSWERS
+    story.append(Paragraph("CANDIDATE RESPONSES", SECH_S))
+    story.append(HRFlowable(width="100%", thickness=0.8, color=NAVY, spaceAfter=6))
+
+    qa_pairs = [
+        ("Motivation for Sales",          data.get("q_motivation", "")),
+        ("Handling Monthly Pressure",     data.get("q_pressure", "")),
+        ("Response to Client Rejection",  data.get("q_rejection", "")),
+        ("Career Ambition (3 Years)",     data.get("q_ambition", "")),
+        ("Preferred Work Environment",    data.get("q_work_env", "")),
+        ("Self-Description",              data.get("open_q", "")),
+    ]
+    for q, a in qa_pairs:
+        if a:
+            story.append(Paragraph(q, LBL_S))
+            story.append(Paragraph(a, VAL_S))
+
+    # ── FOOTER
+    story.append(Spacer(1, 4*mm))
+    story.append(HRFlowable(width="100%", thickness=0.4, color=GRULE, spaceAfter=3))
+    story.append(Paragraph(
+        f"Confidential Assessment Report   |   Generated {datetime.now().strftime('%B %d, %Y')}   |   Talently — Deals Outsourcing.com",
+        FOOT_S
     ))
 
     doc.build(story)
@@ -972,14 +844,14 @@ def generate_pdf_ats(cv_text, data):
 # ── BRAND BAR ─────────────────────────────────────────────────────────────────
 def render_brand():
     lang = st.session_state.lang or "en"
-    t = T[lang]
+    t_local = T[lang]
     st.markdown(f"""
     <div class="brand-bar">
       <div class="brand-left">
-        <div class="brand-name">{t['brand']}<span class="brand-dot"></span></div>
-        <div class="brand-sub-name">{t['brand_sub']}</div>
+        <div class="brand-name">{t_local['brand']}<span class="brand-dot"></span></div>
+        <div class="brand-sub-name">{t_local['brand_sub']}</div>
       </div>
-      <div class="brand-tag">{t['brand_tag']}</div>
+      <div class="brand-tag">{t_local['brand_tag']}</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -998,7 +870,6 @@ if st.session_state.lang is None:
       </div>
     </div>
     """, unsafe_allow_html=True)
-
     col1, col2 = st.columns(2)
     with col1:
         if st.button("🇸🇦  العربية", use_container_width=True):
@@ -1008,15 +879,9 @@ if st.session_state.lang is None:
         if st.button("🇬🇧  English", use_container_width=True):
             st.session_state.lang = "en"
             st.rerun()
-
-    st.markdown("""
-    <p style="text-align:center; font-size:10px; color:#3A4558; margin-top:24px; letter-spacing:2px; font-family:Outfit,sans-serif;">
-      Powered by Deals Outsourcing.com
-    </p>
-    """, unsafe_allow_html=True)
+    st.markdown('<p style="text-align:center;font-size:10px;color:#3A4558;margin-top:24px;letter-spacing:2px;">Powered by Deals Outsourcing.com</p>', unsafe_allow_html=True)
     st.stop()
 
-# ── Active language
 t = T[st.session_state.lang]
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1033,27 +898,17 @@ if st.session_state.step == 0:
     </div>
     <div class="hero-sub">{t['hero_sub']}</div>
     <div class="stats-grid">
-      <div class="stat-cell">
-        <div class="stat-num">{t['stat1_n']}</div>
-        <div class="stat-lbl">{t['stat1_l']}</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-num">{t['stat2_n']}</div>
-        <div class="stat-lbl">{t['stat2_l']}</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-num">{t['stat3_n']}</div>
-        <div class="stat-lbl">{t['stat3_l']}</div>
-      </div>
+      <div class="stat-cell"><div class="stat-num">{t['stat1_n']}</div><div class="stat-lbl">{t['stat1_l']}</div></div>
+      <div class="stat-cell"><div class="stat-num">{t['stat2_n']}</div><div class="stat-lbl">{t['stat2_l']}</div></div>
+      <div class="stat-cell"><div class="stat-num">{t['stat3_n']}</div><div class="stat-lbl">{t['stat3_l']}</div></div>
     </div>
     """, unsafe_allow_html=True)
-
     if st.button(t["start_btn"], use_container_width=True):
         st.session_state.step = 1
         st.rerun()
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 1 — BASIC INFO
+# STEP 1 — PERSONAL INFO
 # ══════════════════════════════════════════════════════════════════════════════
 elif st.session_state.step == 1:
     render_brand()
@@ -1061,48 +916,80 @@ elif st.session_state.step == 1:
     st.markdown(f'<div class="sec-label">{t["step1_label"]}</div>', unsafe_allow_html=True)
 
     d = st.session_state.data
-    with st.form("basic_info"):
-        name      = st.text_input(t["full_name"],  value=d.get("name",""))
-        email     = st.text_input(t["email"],      value=d.get("email",""))
-        phone     = st.text_input(t["phone"],      value=d.get("phone",""))
 
-        city_opts = t["city_opts"]
-        city_idx  = city_opts.index(d["city"]) if d.get("city") in city_opts else 0
-        city      = st.selectbox(t["city"], city_opts, index=city_idx)
+    # Init companies list in session state
+    if "companies" not in st.session_state:
+        st.session_state.companies = [{"company": "", "title": "", "duration": t["duration_opts"][0]}]
+
+    with st.form("basic_info"):
+        name    = st.text_input(t["full_name"],  value=d.get("name", ""))
+        phone   = st.text_input(t["phone"],      value=d.get("phone", ""))
+        address = st.text_input(t["address"],    value=d.get("address", ""))
+
+        age_opts = t["age_opts"]
+        age_idx  = age_opts.index(d["age"]) if d.get("age") in age_opts else 0
+        age      = st.selectbox(t["age"], age_opts, index=age_idx)
 
         edu_opts  = t["edu_opts"]
         edu_idx   = edu_opts.index(d["education"]) if d.get("education") in edu_opts else 0
         education = st.selectbox(t["edu"], edu_opts, index=edu_idx)
 
-        major     = st.text_input(t["major"],      value=d.get("major",""))
+        major   = st.text_input(t["major"], value=d.get("major", ""))
 
         years_opts = t["years_opts"]
         years_idx  = years_opts.index(d["years_exp"]) if d.get("years_exp") in years_opts else 0
         years_exp  = st.selectbox(t["years_exp"], years_opts, index=years_idx)
 
-        prev_job  = st.text_input(t["prev_job"],   value=d.get("prev_job",""))
+        # ── Work Experience entries
+        st.markdown(f'<div style="font-size:8.5px;letter-spacing:3px;text-transform:uppercase;color:#5C6478;margin:20px 0 12px;">{t["exp_section"]}</div>', unsafe_allow_html=True)
+
+        company_entries = []
+        for i, comp in enumerate(st.session_state.companies):
+            st.markdown(f'<div style="font-size:10px;color:#C8A45A;margin:8px 0 4px;">— {t["exp_label"]} {i+1}</div>', unsafe_allow_html=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                co_name = st.text_input(t["company_name"], value=comp.get("company",""), key=f"co_{i}")
+            with col2:
+                co_title = st.text_input(t["job_title"], value=comp.get("title",""), key=f"tl_{i}")
+            dur_opts = t["duration_opts"]
+            dur_idx  = dur_opts.index(comp.get("duration", dur_opts[0])) if comp.get("duration") in dur_opts else 0
+            co_dur   = st.selectbox(t["duration"], dur_opts, index=dur_idx, key=f"du_{i}")
+            company_entries.append({"company": co_name, "title": co_title, "duration": co_dur})
 
         submitted = st.form_submit_button(t["next"], use_container_width=True)
+
         if submitted:
-            if not name.strip() or not email.strip() or not phone.strip():
-                st.error(t["err_required"])
-            elif city == city_opts[0]:
-                st.error(t["err_city"])
-            elif education == edu_opts[0]:
-                st.error(t["err_edu"])
-            elif years_exp == years_opts[0]:
-                st.error(t["err_exp"])
+            errors = []
+            if not name.strip() or not phone.strip() or not address.strip():
+                errors.append(t["err_required"])
+            if age == age_opts[0]:
+                errors.append(t["err_age"])
+            if education == edu_opts[0]:
+                errors.append(t["err_edu"])
+            if years_exp == years_opts[0]:
+                errors.append(t["err_exp"])
+            if errors:
+                for e in errors:
+                    st.error(e)
             else:
                 st.session_state.data.update({
-                    "name": name, "email": email, "phone": phone,
-                    "city": city, "education": education, "major": major,
-                    "years_exp": years_exp, "prev_job": prev_job
+                    "name": name, "phone": phone, "address": address,
+                    "age": age, "education": education, "major": major,
+                    "years_exp": years_exp,
+                    "companies": company_entries,
+                    "lang": st.session_state.lang,
                 })
+                st.session_state.companies = company_entries
                 st.session_state.step = 2
                 st.rerun()
 
+    # Add company button (outside form)
+    if st.button(t["add_exp"], use_container_width=False):
+        st.session_state.companies.append({"company": "", "title": "", "duration": t["duration_opts"][0]})
+        st.rerun()
+
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 2 — ASSESSMENT QUESTIONS
+# STEP 2 — ASSESSMENT
 # ══════════════════════════════════════════════════════════════════════════════
 elif st.session_state.step == 2:
     render_brand()
@@ -1110,32 +997,39 @@ elif st.session_state.step == 2:
     st.markdown(f'<div class="sec-label">{t["step2_label"]}</div>', unsafe_allow_html=True)
 
     d = st.session_state.data
+
     with st.form("assessment"):
-        q_motivation = st.radio(t["q_motivation"], t["q_motivation_opts"],
-                                index=t["q_motivation_opts"].index(d["q_motivation"]) if d.get("q_motivation") in t["q_motivation_opts"] else 0)
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+        q_motivation = st.radio(
+            t["q_motivation"], t["q_motivation_opts"],
+            index=t["q_motivation_opts"].index(d["q_motivation"]) if d.get("q_motivation") in t["q_motivation_opts"] else 0
+        )
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-        q_pressure   = st.radio(t["q_pressure"],   t["q_pressure_opts"],
-                                index=t["q_pressure_opts"].index(d["q_pressure"]) if d.get("q_pressure") in t["q_pressure_opts"] else 0)
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+        q_pressure = st.radio(
+            t["q_pressure"], t["q_pressure_opts"],
+            index=t["q_pressure_opts"].index(d["q_pressure"]) if d.get("q_pressure") in t["q_pressure_opts"] else 0
+        )
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-        q_rejection  = st.radio(t["q_rejection"],  t["q_rejection_opts"],
-                                index=t["q_rejection_opts"].index(d["q_rejection"]) if d.get("q_rejection") in t["q_rejection_opts"] else 0)
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+        q_rejection = st.radio(
+            t["q_rejection"], t["q_rejection_opts"],
+            index=t["q_rejection_opts"].index(d["q_rejection"]) if d.get("q_rejection") in t["q_rejection_opts"] else 0
+        )
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-        q_learn      = st.radio(t["q_learn"],      t["q_learn_opts"],
-                                index=t["q_learn_opts"].index(d["q_learn"]) if d.get("q_learn") in t["q_learn_opts"] else 0)
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+        q_ambition = st.radio(
+            t["q_ambition"], t["q_ambition_opts"],
+            index=t["q_ambition_opts"].index(d["q_ambition"]) if d.get("q_ambition") in t["q_ambition_opts"] else 0
+        )
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-        q_training   = st.radio(t["q_training"],   t["q_training_opts"],
-                                index=t["q_training_opts"].index(d["q_training"]) if d.get("q_training") in t["q_training_opts"] else 0)
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+        q_work_env = st.radio(
+            t["q_work_env"], t["q_work_env_opts"],
+            index=t["q_work_env_opts"].index(d["q_work_env"]) if d.get("q_work_env") in t["q_work_env_opts"] else 0
+        )
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-        q_scenario   = st.radio(t["q_scenario"],   t["q_scenario_opts"],
-                                index=t["q_scenario_opts"].index(d["q_scenario"]) if d.get("q_scenario") in t["q_scenario_opts"] else 0)
-        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
-
-        open_q = st.text_area(t["open_q"], value=d.get("open_q",""), height=120)
+        open_q = st.text_area(t["open_q"], value=d.get("open_q", ""), height=120)
 
         col_back, col_next = st.columns(2)
         with col_back:
@@ -1155,11 +1049,9 @@ elif st.session_state.step == 2:
                     "q_motivation": q_motivation,
                     "q_pressure":   q_pressure,
                     "q_rejection":  q_rejection,
-                    "q_learn":      q_learn,
-                    "q_training":   q_training,
-                    "q_scenario":   q_scenario,
+                    "q_ambition":   q_ambition,
+                    "q_work_env":   q_work_env,
                     "open_q":       open_q,
-                    "lang":         st.session_state.lang,
                 })
                 st.session_state.step = 3
                 st.rerun()
@@ -1172,51 +1064,34 @@ elif st.session_state.step == 3:
     st.progress(100)
     data = st.session_state.data
 
+    companies_text = "\n".join([
+        f"  - {c.get('company','')} | {c.get('title','')} | {c.get('duration','')}"
+        for c in data.get("companies", []) if c.get("company","").strip()
+    ]) or "  - No previous experience (Entry Level)"
+
     if st.session_state.cv_text is None:
-        st.markdown(f'<div class="sec-label">{t["generating"]}</div>', unsafe_allow_html=True)
+        with st.spinner(t["generating"]):
 
-        lang_instruction = "Arabic" if st.session_state.lang == "ar" else "English"
+            # ── PROMPT 1: CV only
+            cv_prompt = f"""
+You are a senior ATS-certified resume writer. Write a professional ATS-optimized CV in ENGLISH ONLY.
 
-        prompt = f"""
-You are a senior HR specialist and ATS-certified resume writer with expertise in Sales & Marketing roles in Egypt.
-
-Your task: Write a professional ATS-optimized CV in ENGLISH ONLY (regardless of candidate language). No Arabic. No other language.
-
-Candidate Profile:
-- Full Name: {data['name']}
+Candidate:
+- Name: {data['name']}
+- Age: {data['age']}
+- Address: {data['address']}, Egypt
 - Phone: {data['phone']}
-- Email: {data['email']}
-- City: {data['city']}, Egypt
-- Education: {data['education']} in {data['major']}
+- Education: {data['education']} in {data.get('major','')}
 - Years of Sales Experience: {data['years_exp']}
-- Previous Job Title: {data.get('prev_job','N/A')}
-- Motivation for Sales: {data['q_motivation']}
-- Handles pressure by: {data['q_pressure']}
-- Handles rejection by: {data['q_rejection']}
-- Learning style: {data['q_learn']}
-- Training commitment: {data['q_training']}
-- First-week scenario: {data['q_scenario']}
-- Self-description: {data['open_q']}
+- Previous Companies:
+{companies_text}
 
-Write the CV in EXACTLY this format (no markdown, no bold, no special chars, ATS clean):
+Self-Description: {data['open_q']}
 
-## ASSESSMENT REPORT
-Score: X/10
-Strengths:
-- (strength 1 based on answers)
-- (strength 2 based on answers)
-- (strength 3 based on answers)
-Recommendation: Suitable for Sales Role / Needs Development / Not Suitable at This Time
-
----
-
-## CURRICULUM VITAE
-
-{data['name'].upper()}
-{data['city']}, Egypt | {data['phone']} | {data['email']}
+Write EXACTLY in this format. Plain text only. No markdown. No bold markers. No special characters. ATS clean:
 
 PROFESSIONAL SUMMARY
-Write 3 strong sentences. Use action verbs. Tailor for a Sales professional in Egypt. ATS-friendly. No fluff.
+Write 3 strong action-verb sentences tailored for a Sales professional in Egypt. Be specific, not generic.
 
 CORE COMPETENCIES
 - Competency 1
@@ -1225,46 +1100,107 @@ CORE COMPETENCIES
 - Competency 4
 - Competency 5
 - Competency 6
+- Competency 7
+- Competency 8
 
 EDUCATION
-{data['education']} in {data['major']}
+{data['education']} in {data.get('major','')}
 Egypt
-
-KEY ATTRIBUTES
-- Attribute based on answers (be specific, not generic)
-- Attribute based on answers
-- Attribute based on answers
 
 LANGUAGES
 - Arabic: Native
 - English: Intermediate
 
-IMPORTANT RULES:
-- English ONLY. No Arabic. No other languages. No markdown. No bold markers.
-- No fake experience, no fake companies, no fabricated dates.
-- Plain text only — ATS must parse this perfectly.
-- Be honest in assessment, give realistic score based on candidate's answers.
+RULES:
+- English ONLY. No Arabic.
+- No fake data. No fabricated companies or dates.
+- Plain text, ATS must parse perfectly.
+- Do NOT include contact info or name (handled separately).
+- Do NOT include assessment or score.
 """
-        with st.spinner(t["generating"]):
-            result = ask_ai(prompt)
 
-        if result is None:
+            # ── PROMPT 2: Assessment only
+            exp_level = data['years_exp']
+            assessment_prompt = f"""
+You are a senior HR specialist and talent assessor. Write a confidential assessment report in ENGLISH ONLY.
+
+Candidate:
+- Name: {data['name']}
+- Age: {data['age']}
+- Education: {data['education']} in {data.get('major','')}
+- Years of Experience: {data['years_exp']}
+- Companies:
+{companies_text}
+- Motivation: {data['q_motivation']}
+- Handles Pressure: {data['q_pressure']}
+- Handles Rejection: {data['q_rejection']}
+- Career Ambition: {data['q_ambition']}
+- Work Environment Preference: {data['q_work_env']}
+- Self Description: {data['open_q']}
+
+Write EXACTLY in this format. Plain text. No markdown. No bold:
+
+Score: X/10
+Best Fit Role: (suggest 1-2 specific roles based on profile)
+Recommendation: HIGHLY RECOMMENDED / RECOMMENDED / NEEDS DEVELOPMENT / NOT SUITABLE
+
+Key Findings:
+- (finding 1 — be specific and honest)
+- (finding 2)
+- (finding 3)
+
+Candidate Answers:
+- Motivation for Sales: {data['q_motivation']}
+- Handles Pressure by: {data['q_pressure']}
+- Response to Rejection: {data['q_rejection']}
+- Career Ambition: {data['q_ambition']}
+- Work Environment: {data['q_work_env']}
+
+RULES:
+- Be honest. Give realistic score based on answers.
+- If entry level, suggest roles they CAN learn and grow into.
+- English ONLY. No Arabic.
+- Plain text, no markdown.
+"""
+
+            cv_result         = ask_ai(cv_prompt)
+            assessment_result = ask_ai(assessment_prompt)
+
+        if cv_result is None or assessment_result is None:
             st.stop()
 
-        st.session_state.cv_text = result
+        st.session_state.cv_text         = cv_result
+        st.session_state.assessment_text = assessment_result
         save_to_csv(data)
 
+    # ── DISPLAY RESULTS
     st.markdown(f'<div class="success-banner">{t["success"]} — {data["name"]}</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="sec-label">{t["preview_label"]}</div>', unsafe_allow_html=True)
+
+    # CV Preview
+    st.markdown(f'<div class="sec-label">{t["preview_cv"]}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="cv-box">{st.session_state.cv_text}</div>', unsafe_allow_html=True)
 
-    pdf_buffer = generate_pdf_ats(st.session_state.cv_text, data)
-    safe_name  = data['name'].replace(' ', '_')
-
+    cv_pdf = generate_cv_pdf(st.session_state.cv_text, data)
+    safe_name = data['name'].replace(' ', '_')
     st.download_button(
-        label=t["download_btn"],
-        data=pdf_buffer,
+        label=t["download_cv"],
+        data=cv_pdf,
         file_name=f"CV_{safe_name}_Talently.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Assessment Preview
+    st.markdown(f'<div class="sec-label">{t["preview_report"]}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="cv-box">{st.session_state.assessment_text}</div>', unsafe_allow_html=True)
+
+    report_pdf = generate_report_pdf(st.session_state.assessment_text, data)
+    st.download_button(
+        label=t["download_report"],
+        data=report_pdf,
+        file_name=f"Assessment_{safe_name}_Talently.pdf",
         mime="application/pdf",
         use_container_width=True,
     )
@@ -1275,9 +1211,12 @@ IMPORTANT RULES:
         st.session_state.step = 0
         st.session_state.data = {}
         st.session_state.cv_text = None
+        st.session_state.assessment_text = None
+        if "companies" in st.session_state:
+            del st.session_state.companies
         st.rerun()
 
     st.markdown(
-        f'<p style="text-align:center;font-size:11px;color:#2A3448;margin-top:32px;letter-spacing:3px;font-family:Outfit,sans-serif;">{t["footer_contact"]}</p>',
+        f'<p style="text-align:center;font-size:11px;color:#2A3448;margin-top:32px;letter-spacing:3px;">{t["footer_contact"]}</p>',
         unsafe_allow_html=True
     )
